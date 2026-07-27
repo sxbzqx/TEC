@@ -1,0 +1,92 @@
+:root {
+  --brand: #534AB7;
+  --brand-soft: #EEEDFE;
+  --brand-tint: #faf9ff;
+  --brand-dark: #3C3489;
+  --ink: #0f172a;
+  --ink-soft: #64748b;
+  --ink-faint: #94a3b8;
+  --bg: #f8fafc;
+  --header-bg: #1b1633;
+  --border: #f1f5f9;
+  --border-strong: #e2e8f0;
+  --hover-border: #afa9ec;
+  --active-border: #cecbf6;
+  --surface: #ffffff;
+  --surface-soft: #f8fafc;
+  --surface-hover: #fafbff;
+  --success: #1D9E75;
+  --success-soft: #E1F5EE;
+  --success-dark: #0F6E56;
+  --warning: #BA7517;
+  --warning-soft: #FAEEDA;
+  --warning-dark: #854F0B;
+  --danger: #DC4446;
+  --danger-soft: #FDECEC;
+  --danger-dark: #B42318;
+  --info: #378ADD;
+  --info-soft: #E6F1FB;
+  --info-dark: #185FA5;
+}
+
+[data-theme="dark"] {
+  --brand: #8b7ff0;
+  --brand-soft: rgba(139, 127, 240, 0.16);
+  --brand-tint: rgba(139, 127, 240, 0.08);
+  --brand-dark: #a89bff;
+  --ink: #e6e8ee;
+  --ink-soft: #9aa3b5;
+  --ink-faint: #6b7385;
+  --bg: #0e0f14;
+  --header-bg: #151726;
+  --border: #232636;
+  --border-strong: #2c3040;
+  --hover-border: #5b52a8;
+  --active-border: #453f86;
+  --surface: #171923;
+  --surface-soft: #1b1e2b;
+  --surface-hover: #1e2130;
+  --success: #34d399;
+  --success-soft: rgba(52, 211, 153, 0.14);
+  --success-dark: #6ee7b7;
+  --warning: #f0b93f;
+  --warning-soft: rgba(240, 185, 63, 0.14);
+  --warning-dark: #f7cd6f;
+  --danger: #ef5a5c;
+  --danger-soft: rgba(239, 90, 92, 0.14);
+  --danger-dark: #f4898a;
+  --info: #5da3ee;
+  --info-soft: rgba(93, 163, 238, 0.14);
+  --info-dark: #8ec0f4;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-golos), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition {
+  animation: pageFadeIn 0.28s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition {
+    animation: none;
+  }
+}
