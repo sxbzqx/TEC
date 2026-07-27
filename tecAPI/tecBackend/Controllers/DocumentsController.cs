@@ -22,6 +22,7 @@ public class DocumentsController : ControllerBase
     /// Все заявки. 
     /// </summary>
     [HttpGet]
+    [Authorize(Roles = "Admin,SuperAdmin,Worker")]
     public async Task<ActionResult<IEnumerable<Document>>> GetDocuments()
     {
         return await _context.Documents.ToListAsync();

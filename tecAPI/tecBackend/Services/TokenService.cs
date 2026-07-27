@@ -29,7 +29,12 @@ public class TokenService : ITokenService
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["AppSettings:Token"]));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+        var issuer = _config["AppSettings:Issuer"] ?? "tec-api";
+        var audience = _config["AppSettings:Audience"] ?? "tec-client";
+
         var token = new JwtSecurityToken(
+            issuer: issuer,
+            audience: audience,
             claims: claims,
             expires: DateTime.UtcNow.AddMinutes(30), 
             signingCredentials: creds

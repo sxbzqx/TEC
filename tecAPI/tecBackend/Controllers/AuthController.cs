@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using tecBackend.Dtos;
 using tecBackend.Models;
@@ -76,6 +77,7 @@ public class AuthController : ControllerBase
     /// Регистрация обычного пользователя — без привязки к отделу и без проверки по табельному номеру.
     /// </summary>
     [HttpPost("register")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Login) || string.IsNullOrWhiteSpace(request.Password))
@@ -115,6 +117,7 @@ public class AuthController : ControllerBase
     /// саму личность подтверждаем на EmployeeRegister, по ФИО и дате рождения.
     /// </summary>
     [HttpPost("employee/lookup")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> EmployeeLookup([FromBody] EmployeeLookupRequest request)
     {
         var tabel = request.Tabel?.Trim();
@@ -146,6 +149,7 @@ public class AuthController : ControllerBase
     /// эндпоинт только для UX, не единственная точка защиты.
     /// </summary>
     [HttpPost("employee/verify")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> EmployeeVerify([FromBody] EmployeeVerifyRequest request)
     {
         var tabel = request.Tabel?.Trim();
@@ -181,6 +185,7 @@ public class AuthController : ControllerBase
     /// из справочника workers.
     /// </summary>
     [HttpPost("employee/register")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> EmployeeRegister([FromBody] EmployeeRegisterRequest request)
     {
         var tabel = request.Tabel?.Trim();
@@ -280,6 +285,7 @@ public class AuthController : ControllerBase
     /// Вход в аккаунт. 
     /// </summary>
     [HttpPost("login")]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == request.Login);
@@ -309,7 +315,7 @@ public class AuthController : ControllerBase
         var session = new UserSession
         {
             UserId = user.Id,
-            RefreshToken = refreshToken,
+            RefreshToken = RefreshTokenHasher.Hash(refreshToken),
             ExpiryTime = DateTime.UtcNow.AddDays(7),
         };
 
@@ -330,8 +336,9 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "Отсутствует токен для выхода" });
         }
 
+        var hashedToken = RefreshTokenHasher.Hash(request.RefreshToken);
         var session = await _context.UserSessions.FirstOrDefaultAsync(s =>
-            s.RefreshToken.Trim() == request.RefreshToken.Trim()
+            s.RefreshToken == hashedToken
         );
 
         if (session != null)
@@ -350,8 +357,9 @@ public class AuthController : ControllerBase
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)
     {
+        var hashedToken = RefreshTokenHasher.Hash(request.RefreshToken);
         var session = await _context.UserSessions.FirstOrDefaultAsync(s =>
-            s.RefreshToken.Trim() == request.RefreshToken.Trim()
+            s.RefreshToken == hashedToken
         );
 
         if (session == null || session.ExpiryTime <= DateTime.UtcNow)
@@ -370,7 +378,7 @@ public class AuthController : ControllerBase
         var newAccessToken = _tokenService.GenerateAccessToken(user.Id, user.Login, userRole);
         var newRefreshToken = _tokenService.GenerateRefreshToken();
 
-        session.RefreshToken = newRefreshToken;
+        session.RefreshToken = RefreshTokenHasher.Hash(newRefreshToken);
         session.ExpiryTime = DateTime.UtcNow.AddDays(7);
         await _context.SaveChangesAsync();
 
@@ -412,7 +420,8 @@ public class AuthController : ControllerBase
         var currentToken = request.CurrentRefreshToken?.Trim();
         if (!string.IsNullOrEmpty(currentToken))
         {
-            sessionsQuery = sessionsQuery.Where(s => s.RefreshToken != currentToken);
+            var currentHashed = RefreshTokenHasher.Hash(currentToken);
+            sessionsQuery = sessionsQuery.Where(s => s.RefreshToken != currentHashed);
         }
 
         var sessionsToRemove = await sessionsQuery.ToListAsync();
@@ -464,7 +473,7 @@ public class AuthController : ControllerBase
             new UserSession
             {
                 UserId = user.Id,
-                RefreshToken = newRefreshToken,
+                RefreshToken = RefreshTokenHasher.Hash(newRefreshToken),
                 ExpiryTime = DateTime.UtcNow.AddDays(7),
             }
         );

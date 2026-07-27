@@ -5,7 +5,7 @@ using tecBackend.Models;
 
 namespace tecBackend.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     [ApiController]
     [Route("api/[controller]")]
     public class WorkersController : ControllerBase
@@ -17,9 +17,10 @@ namespace tecBackend.Controllers
             _context = context;
         }
 
-        
-        
-        
+        /// <summary>
+        /// Дни рождения сегодня/завтра — не персональные данные вне контекста,
+        /// поэтому единственный публичный эндпоинт в контроллере.
+        /// </summary>
         [HttpGet("birthdays")]
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Worker>>> GetBirthdays()
@@ -27,7 +28,6 @@ namespace tecBackend.Controllers
             var today = DateTime.Today;
             var tomorrow = today.AddDays(1);
 
-            
             var birthdays = await _context
                 .Workers.Where(w =>
                     (w.Dr.Day == today.Day && w.Dr.Month == today.Month)
@@ -38,20 +38,15 @@ namespace tecBackend.Controllers
             return Ok(birthdays);
         }
 
-        
-        
-        
+        /// <summary>
+        /// Полный справочник сотрудников — только для админов.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Worker>>> GetWorkers()
         {
             return await _context.Workers.ToListAsync();
         }
 
-        
-        
-        
-        
-        
         [HttpGet("{id}")]
         public async Task<ActionResult<Worker>> GetWorker(int id)
         {
@@ -65,10 +60,6 @@ namespace tecBackend.Controllers
             return worker;
         }
 
-        
-        
-        
-        
         [HttpPost]
         public async Task<ActionResult<Worker>> PostWorker(Worker worker)
         {
