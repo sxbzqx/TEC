@@ -1,8 +1,10 @@
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.RateLimiting;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using tecBackend.Models;
@@ -18,6 +20,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 var jwtSecret =
     builder.Configuration["AppSettings:Token"]
     ?? throw new InvalidOperationException("Ключа JWT нет в конфигурации");
+
+var jwtIssuer = builder.Configuration["AppSettings:Issuer"] ?? "tec-api";
+var jwtAudience = builder.Configuration["AppSettings:Audience"] ?? "tec-client";
 
 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
 
@@ -136,8 +141,10 @@ builder
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = key,
-            ValidateIssuer = false,
-            ValidateAudience = false,
+            ValidateIssuer = true,
+            ValidIssuer = jwtIssuer,
+            ValidateAudience = true,
+            ValidAudience = jwtAudience,
             ValidateLifetime = true,
             NameClaimType = ClaimTypes.Name,
             RoleClaimType = ClaimTypes.Role,
@@ -146,22 +153,42 @@ builder
 
 builder.Services.AddAuthorization();
 
+// 7. Rate limiting на аутентификационных эндпоинтах — защита от брутфорса
+//    паролей и перебора табельных номеров.
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddFixedWindowLimiter(
+        "auth",
+        opt =>
+        {
+            opt.PermitLimit = 10;
+            opt.Window = TimeSpan.FromMinutes(1);
+            opt.QueueLimit = 0;
+        }
+    );
+});
+
 var app = builder.Build();
 
 
-// Включаем Swagger вне зависимости от IsDevelopment, чтобы он работал в Docker
-// 1. Указываем Swagger генерировать JSON с префиксом /api/
-app.UseSwagger(c =>
+// Swagger — только в Development. В проде схема API не должна быть публичной.
+if (app.Environment.IsDevelopment())
 {
-    c.RouteTemplate = "api/swagger/{documentName}/swagger.json";
-});
+    // 1. Указываем Swagger генерировать JSON с префиксом /api/
+    app.UseSwagger(c =>
+    {
+        c.RouteTemplate = "api/swagger/{documentName}/swagger.json";
+    });
 
-// 2. Настраиваем UI
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("v1/swagger.json", "ТЭЦ API v1");
-    c.RoutePrefix = "api/swagger";
-});
+    // 2. Настраиваем UI
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("v1/swagger.json", "ТЭЦ API v1");
+        c.RoutePrefix = "api/swagger";
+    });
+}
 
 app.UseRouting();
 
@@ -169,6 +196,7 @@ app.UseCors("AllowNextJS");
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 app.MapControllers();
 
