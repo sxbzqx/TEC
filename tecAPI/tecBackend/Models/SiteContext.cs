@@ -5885,9 +5885,26 @@ public partial class SiteContext : DbContext
 
         modelBuilder.Entity<Post>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id).HasName("news_posts_pkey");
 
-            entity.ToTable("posts");
+            entity.ToTable("news_posts");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Title).HasColumnName("title");
+            entity.Property(e => e.Content).HasColumnName("content");
+            entity.Property(e => e.CreatedAt).HasColumnName("createdat");
+            entity.Property(e => e.CreatedByUserId).HasColumnName("createdbyuserid");
+            entity.Property(e => e.CreatorName).HasColumnName("creatorname");
+            entity.Property(e => e.CreatorDepartment).HasColumnName("creatordepartment");
+            entity.Property(e => e.CategoryId).HasColumnName("categoryid");
+        });
+
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("categories_pkey");
+            entity.ToTable("categories");
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name).HasColumnName("name");
         });
 
         modelBuilder.Entity<Resource>(entity =>
@@ -6349,7 +6366,7 @@ public partial class SiteContext : DbContext
                 .Property(e => e.ActorUserId)
                 .HasColumnType("int(11)")
                 .HasColumnName("actor_user_id");
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasColumnName("created_at");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp").HasColumnName("created_at");
         });
 
         OnModelCreatingPartial(modelBuilder);
