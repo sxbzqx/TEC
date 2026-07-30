@@ -10,6 +10,7 @@ import {
 } from "@/utils/authCookieConfig";
 
 const ROUTE_PERMISSIONS: { [key: string]: string[] } = {
+  "/admin/activity-log": ["SuperAdmin"],
   "/admin": ["SuperAdmin", "Admin"],
   "/biznesplan": ["SuperAdmin", "Admin"],
   "/workers": ["SuperAdmin", "Admin"],

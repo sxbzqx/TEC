@@ -37,6 +37,12 @@ export const NAV_LINKS = [
         labelKg: "Жаңылыктарды башкаруу",
         roles: ["SuperAdmin", "Admin"],
       },
+      {
+        key: "/admin/activity-log",
+        label: "Журнал действий",
+        labelKg: "Аракеттер журналы",
+        roles: ["SuperAdmin"],
+      },
     ],
   },
   {
