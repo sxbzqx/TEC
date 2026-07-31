@@ -247,9 +247,26 @@ public class AuthController : ControllerBase
         // цех" otdelID=59, а в otdel этот же цех имеет id=11/id_otd=13 —
         // числа из разных систем координат). Надёжно совпадает только текст:
         // worker.Otdel ("отдел рус.полностью") дословно равен otdel.NameOtd.
+        // Регистронезависимо: у ОКиТ, например, otdel.name_otd = "ОКИТ",
+        // а worker.otdelruss = "ОКиТ" — расходятся только регистром "и"/"И".
+        var fullNameLower = worker.Otdel.Trim().ToLower();
         var otdel = await _context.Otdels.FirstOrDefaultAsync(
-            o => o.NameOtd.Trim() == worker.Otdel.Trim()
+            o => o.NameOtd.Trim().ToLower() == fullNameLower
         );
+
+        // otdel.NameOtd ограничен 20 символами — для отделов с длинным
+        // полным названием (например, ОКиТ) там хранится не worker.Otdel
+        // (полное), а краткое имя — worker.OtdelRusS ("отдел рус.кратко").
+        // Без этого фолбэка otdel остаётся null, OtdelId у сотрудника
+        // никогда не проставляется, и заявки в такой отдел не попадают
+        // во "Входящие" (GetIncoming отдаёт пустой список при user.Otdel == null).
+        if (otdel == null && !string.IsNullOrWhiteSpace(worker.OtdelRusS))
+        {
+            var shortNameLower = worker.OtdelRusS.Trim().ToLower();
+            otdel = await _context.Otdels.FirstOrDefaultAsync(
+                o => o.NameOtd.Trim().ToLower() == shortNameLower
+            );
+        }
 
         var newUser = new User
         {

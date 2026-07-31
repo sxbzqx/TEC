@@ -4,7 +4,7 @@ services:
   # -----------------------------------------------
   db:
     ports:
-      - "127.0.0.1:5432:5432"
+      - "5432:5432"
     image: postgres:15-alpine
     container_name: tec_postgres_db
     restart: unless-stopped
