@@ -20,16 +20,19 @@ public class AuthController : ControllerBase
     private readonly SiteContext _context;
     private readonly ITokenService _tokenService;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly IActivityLogService _activityLog;
 
     public AuthController(
         SiteContext context,
         ITokenService tokenService,
-        IPasswordHasher passwordHasher
+        IPasswordHasher passwordHasher,
+        IActivityLogService activityLog
     )
     {
         _context = context;
         _tokenService = tokenService;
         _passwordHasher = passwordHasher;
+        _activityLog = activityLog;
     }
 
     /// <summary>
@@ -106,6 +109,9 @@ public class AuthController : ControllerBase
         };
 
         _context.Users.Add(newUser);
+
+        _activityLog.Log("user_registered", "Зарегистрирован новый пользователь", newUser.Login);
+
         await _context.SaveChangesAsync();
 
         return Ok(new { message = "Регистрация прошла успешно" });
@@ -257,6 +263,13 @@ public class AuthController : ControllerBase
         };
 
         _context.Users.Add(newUser);
+
+        _activityLog.Log(
+            "employee_registered",
+            $"Зарегистрирован сотрудник {worker.Fio}",
+            $"логин: {newUser.Login}, таб. №{worker.Tabel}"
+        );
+
         await _context.SaveChangesAsync();
 
         return Ok(new { message = "Регистрация прошла успешно" });
@@ -411,6 +424,13 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "Новый пароль должен отличаться от текущего" });
 
         user.Password = _passwordHasher.Hash(request.NewPassword);
+
+        _activityLog.Log(
+            "password_changed",
+            $"Пользователь {user.Login} сменил пароль",
+            actorUserId: user.Id
+        );
+
         await _context.SaveChangesAsync();
 
         // Разлогиниваем все сессии, КРОМЕ текущей — её refresh-токен передаёт фронт.
@@ -459,7 +479,16 @@ public class AuthController : ControllerBase
         if (loginTaken)
             return BadRequest(new { message = "Этот логин уже занят" });
 
+        var oldLogin = user.Login;
         user.Login = request.NewLogin;
+
+        _activityLog.Log(
+            "login_changed",
+            $"Пользователь сменил логин",
+            $"{oldLogin} → {request.NewLogin}",
+            actorUserId: user.Id
+        );
+
         await _context.SaveChangesAsync();
 
         var userRole = string.IsNullOrEmpty(user.Role) ? "Worker" : user.Role;
