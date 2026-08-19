@@ -16,7 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 Env.Load();
 builder.Configuration.AddEnvironmentVariables();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var jwtSecret =
     builder.Configuration["AppSettings:Token"]
     ?? throw new InvalidOperationException("Ключа JWT нет в конфигурации");
@@ -65,6 +64,8 @@ builder
 
 
 // 3. Подключение к БД (PostgreSQL)
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<SiteContext>(options => 
     options.UseNpgsql(connectionString!));
 
