@@ -7,7 +7,7 @@ import { ReloadOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { useLocale } from "@/context/LocaleContext";
 import { useIncomingBids } from "@/hooks/useIncomingBids";
-import { DocumentIncoming } from "@/types/document";
+import { BidIncoming } from "@/types/bid";
 
 const { Title, Text } = Typography;
 
@@ -17,7 +17,7 @@ export default function IncomingBidsPage() {
 
   const { data: bids, isLoading, isError, refetch } = useIncomingBids();
 
-  const statusMeta = (record: DocumentIncoming): { label: string; color: string } => {
+  const statusMeta = (record: BidIncoming): { label: string; color: string } => {
     if (record.action === 0) return { label: t("bidStatusPending"), color: "gold" };
     if (record.action === 2) return { label: t("bidStatusRejected"), color: "red" };
     if (record.action === 3) return { label: t("bidStatusPostponed"), color: "default" };
@@ -27,7 +27,7 @@ export default function IncomingBidsPage() {
       : { label: t("bidStatusApproved"), color: "blue" };
   };
 
-  const columns: ColumnsType<DocumentIncoming> = [
+  const columns: ColumnsType<BidIncoming> = [
     { title: t("colId"), dataIndex: "id", key: "id", width: 70 },
     {
       title: t("colSubmitDate"),

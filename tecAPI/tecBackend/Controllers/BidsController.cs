@@ -9,11 +9,11 @@ using tecBackend.Utils;
 
 [Route("api/[controller]")]
 [ApiController]
-public class DocumentsController : ControllerBase
+public class BidsController : ControllerBase
 {
     private readonly SiteContext _context;
 
-    public DocumentsController(SiteContext context)
+    public BidsController(SiteContext context)
     {
         _context = context;
     }

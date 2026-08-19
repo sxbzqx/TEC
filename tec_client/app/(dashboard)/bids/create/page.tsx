@@ -5,7 +5,7 @@ import { App, Form, Select, InputNumber, Input, Button, Card, Typography, Result
 import { SendOutlined } from "@ant-design/icons";
 import { useLocale } from "@/context/LocaleContext";
 import { useResources } from "@/hooks/useResources";
-import { documentService } from "@/services/documentService";
+import { bidService } from "@/services/bidService";
 import { getApiErrorMessage } from "@/utils/apiError";
 
 const { Title, Text } = Typography;
@@ -29,7 +29,7 @@ export default function CreateBidsPage() {
   const handleSubmit = async (values: CreateBidFormValues) => {
     setSubmitting(true);
     try {
-      await documentService.create({
+      await bidService.create({
         idResource: values.idResource,
         amount: values.amount ?? null,
         comment: values.comment ?? null,

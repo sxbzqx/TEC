@@ -1,4 +1,4 @@
-export interface Document {
+export interface Bid {
   id: number;
   idPerUser: number;
   idUser: string;
@@ -20,7 +20,7 @@ export interface Document {
 /** 0 - на рассмотрении, 1 - разрешено, 2 - отклонено, 3 - отложено */
 export type BidAction = 0 | 1 | 2 | 3;
 
-export interface DocumentIncoming {
+export interface BidIncoming {
   id: number;
   dateFirst: string;
   idResource: number;

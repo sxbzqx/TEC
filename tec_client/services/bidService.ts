@@ -1,5 +1,5 @@
 import { $api } from "@/app/api/api";
-import { Document, DocumentIncoming } from "@/types/document";
+import { Bid, BidIncoming } from "@/types/bid";
 
 export interface CreateDocumentPayload {
   idResource: number;
@@ -7,24 +7,24 @@ export interface CreateDocumentPayload {
   comment?: string | null;
 }
 
-export const documentService = {
+export const bidService = {
   async create(payload: CreateDocumentPayload) {
-    const { data } = await $api.post<Document>("/documents", payload);
+    const { data } = await $api.post<Document>("/bids", payload);
     return data;
   },
 
   async getIncoming() {
-    const { data } = await $api.get<DocumentIncoming[]>("/documents/incoming");
+    const { data } = await $api.get<BidIncoming[]>("/bids/incoming");
     return data;
   },
 
   async getById(id: number | string) {
-    const { data } = await $api.get<DocumentIncoming>(`/documents/${id}`);
+    const { data } = await $api.get<BidIncoming>(`/bids/${id}`);
     return data;
   },
 
   async decide(id: number, action: 1 | 2 | 3, comment?: string) {
-    const { data } = await $api.put<Document>(`/documents/${id}/decision`, {
+    const { data } = await $api.put<Document>(`/bids/${id}/decision`, {
       action,
       comment: comment ?? null,
     });
@@ -32,7 +32,7 @@ export const documentService = {
   },
 
   async complete(id: number) {
-    const { data } = await $api.put<Document>(`/documents/${id}/complete`);
+    const { data } = await $api.put<Document>(`/bids/${id}/complete`);
     return data;
   },
 };

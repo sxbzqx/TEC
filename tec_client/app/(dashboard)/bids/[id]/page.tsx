@@ -12,7 +12,7 @@ import {
 } from "@ant-design/icons";
 import { useLocale } from "@/context/LocaleContext";
 import { useBidDetail, useDecideBid, useCompleteBid } from "@/hooks/useIncomingBids";
-import { DocumentIncoming } from "@/types/document";
+import { BidIncoming } from "@/types/bid";
 import { getApiErrorMessage } from "@/utils/apiError";
 
 const { Title } = Typography;
@@ -32,7 +32,7 @@ export default function BidDetailPage() {
   const [decisionAction, setDecisionAction] = useState<DecisionAction | null>(null);
   const [decisionForm] = Form.useForm<{ comment?: string }>();
 
-  const statusMeta = (record: DocumentIncoming): { label: string; color: string } => {
+  const statusMeta = (record: BidIncoming): { label: string; color: string } => {
     if (record.action === 0) return { label: t("bidStatusPending"), color: "gold" };
     if (record.action === 2) return { label: t("bidStatusRejected"), color: "red" };
     if (record.action === 3) return { label: t("bidStatusPostponed"), color: "default" };

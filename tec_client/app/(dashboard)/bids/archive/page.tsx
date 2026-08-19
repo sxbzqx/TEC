@@ -5,20 +5,20 @@ import { useQuery } from "@tanstack/react-query";
 import { $api } from "@/app/api/api";
 import { Typography, Spin, Table, Select, Button, Space, Row, Col } from "antd";
 import { PrinterOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Document } from "@/types/document";
+import { Bid } from "@/types/bid";
 import { useLocale } from "@/context/LocaleContext";
 
 const { Title, Text } = Typography;
 
-export default function DocumentsPage() {
+export default function BidsArchivePage() {
   const { t } = useLocale();
   const [year, setYear] = useState<number>(2024);
   const [month, setMonth] = useState<number>(3);
 
-  const { data: documents, isLoading, isError, refetch } = useQuery({
-    queryKey: ["documents", year, month],
+  const { data: bids, isLoading, isError, refetch } = useQuery({
+    queryKey: ["bids", year, month],
     queryFn: async () => {
-      const response = await $api.get(`/documents/${year}/${month}`);
+      const response = await $api.get(`/bids/${year}/${month}`);
       return response.data as Document[];
     },
   });
@@ -68,7 +68,7 @@ export default function DocumentsPage() {
               <Select.Option key={m} value={m}>{m.toString().padStart(2, '0')}</Select.Option>
             ))}
           </Select>
-          <Button icon={<PrinterOutlined />} onClick={handlePrint} disabled={!documents || documents.length === 0}>
+          <Button icon={<PrinterOutlined />} onClick={handlePrint} disabled={!bids || bids.length === 0}>
             {t("bidsPrint")}
           </Button>
         </Space>
@@ -84,7 +84,7 @@ export default function DocumentsPage() {
         </div>
       ) : (
         <Table
-          dataSource={documents}
+          dataSource={bids}
           columns={columns}
           rowKey="id"
           pagination={false}
