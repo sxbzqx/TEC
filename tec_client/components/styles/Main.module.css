@@ -1,0 +1,450 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.ant-layout {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+/* ─── Page wrapper ─── */
+.landingPage {
+  background: var(--surface-soft);
+}
+
+.landingContent {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 40px 80px;
+}
+
+.sectionWithBg {
+  position: relative;
+  padding: 80px 0;
+  margin: 40px 0;
+  overflow: hidden;
+  border-radius: 24px; /* Скругляем углы всей секции */
+}
+
+/* ─── Hero ─── */
+.hero {
+  position: relative; /* Секция — это "база" */
+  padding: 72px 40px 60px;
+  text-align: center;
+  overflow: hidden; /* Чтобы фон не вылезал за скругленные углы, если они будут */
+  min-height: 600px; /* Задайте высоту, чтобы фон был виден */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.bgOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  object-fit: cover;
+}
+
+/* Затемнение фона */
+.bgOverlay::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 21, 45, 0.7); /* Темная вуаль */
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1; /* Контент выше фона */
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Белый цвет для текста, чтобы он был виден на фоне */
+.heroTitle,
+.heroSub,
+.heroStatVal,
+.heroStatLbl {
+  color: #ffffff !important;
+}
+
+.heroStatDivider {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.heroBadge {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-dark) !important;
+  background: var(--brand-soft) !important;
+  border: none !important;
+  padding: 6px 16px !important;
+  border-radius: 999px !important;
+  margin: 0 0 20px;
+}
+
+.heroTitle {
+  font-size: 42px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.15 !important;
+  color: #ffffff !important;
+  /* max-width: 600px; */
+  margin-bottom: 18px !important;
+}
+
+.heroAccent {
+  color: #ffffff !important;
+}
+
+.heroSub {
+  font-size: 16px !important;
+  color: #ffffff !important;
+  /* max-width: 480px; */
+  line-height: 1.7 !important;
+  margin-bottom: 36px !important;
+}
+
+.heroBtns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 52px;
+}
+
+.btnPrimary {
+  background: var(--brand) !important;
+  border-color: var(--brand) !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  height: 44px !important;
+  padding: 0 28px !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+.btnPrimary:hover {
+  background: var(--brand-dark) !important;
+  border-color: var(--brand-dark) !important;
+}
+
+.btnGhost {
+  height: 44px !important;
+  padding: 0 24px !important;
+  border-radius: 10px !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.btnGhost:hover {
+  border-color: var(--brand) !important;
+  color: var(--brand) !important;
+}
+
+/* Hero stats */
+.heroStats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 44px;
+  /* padding-top: 44px; */
+  /* border-top: 1px solid var(--border); */
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.heroStatItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.heroStatVal {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.heroStatLbl {
+  font-size: 12px;
+  color: var(--ink-faint);
+  font-weight: 400;
+}
+
+.heroStatDivider {
+  width: 1px;
+  height: 36px;
+  background: var(--border);
+}
+
+/* ─── Section commons ─── */
+.section {
+  padding: 56px 0;
+}
+
+.sectionLabel {
+  display: block;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brand) !important;
+  margin-bottom: 10px;
+}
+
+.sectionTitle {
+  font-size: 26px !important;
+  font-weight: 600 !important;
+  color: var(--ink) !important;
+  letter-spacing: -0.02em !important;
+  margin-bottom: 10px !important;
+}
+
+.sectionSub {
+  font-size: 15px !important;
+  color: var(--ink-soft) !important;
+  line-height: 1.65 !important;
+  margin-bottom: 0 !important;
+  max-width: 460px;
+}
+
+.divider {
+  border-color: var(--border) !important;
+  margin: 0 !important;
+}
+
+/* ─── Feature cards ─── */
+.featureCard {
+  height: 100%;
+  border-radius: 16px !important;
+  border: 1px solid var(--border) !important;
+  background: var(--surface) !important;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease !important;
+}
+
+.featureCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px -8px rgba(0, 0, 0, 0.08) !important;
+}
+
+.featureCard :global(.ant-card-body) {
+  padding: 22px 20px !important;
+}
+
+.featureIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.featureTitle {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--ink) !important;
+  margin-bottom: 6px !important;
+}
+
+.featureDesc {
+  font-size: 13px !important;
+  color: var(--ink-soft) !important;
+  line-height: 1.55 !important;
+  margin: 0 !important;
+}
+
+/* ─── Quick links ─── */
+.linkCard {
+  border-radius: 14px !important;
+  border: 1px solid var(--border) !important;
+  background: var(--surface) !important;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease !important;
+  cursor: pointer;
+}
+
+.linkCard:hover {
+  border-color: var(--hover-border) !important;
+  box-shadow: 0 4px 16px -6px rgba(83, 74, 183, 0.12) !important;
+}
+
+.linkCard :global(.ant-card-body) {
+  padding: 16px 18px !important;
+}
+
+.linkCardInner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.linkIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.linkText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.linkTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.linkSub {
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+.linkArrow {
+  font-size: 13px;
+  color: var(--ink-faint);
+  flex-shrink: 0;
+  transition:
+    color 0.15s,
+    transform 0.15s;
+}
+
+.linkCard:hover .linkArrow {
+  color: var(--brand);
+  transform: translateX(2px);
+}
+
+/* ─── CTA Banner ─── */
+.ctaBanner {
+  border-radius: 18px !important;
+  border: 1px solid var(--brand-soft) !important;
+  background: var(--brand-tint) !important;
+}
+
+.ctaBanner :global(.ant-card-body) {
+  padding: 28px 32px !important;
+}
+
+.ctaInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.ctaTitle {
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  color: var(--ink) !important;
+  margin-bottom: 6px !important;
+}
+
+.ctaSub {
+  font-size: 13px !important;
+  color: var(--ink-soft) !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+  max-width: 440px;
+}
+
+/* ─── FAQ ─── */
+.faqCollapse {
+  margin-top: 28px;
+  background: transparent !important;
+  border: none !important;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.faqCollapse :global(.ant-collapse-item) {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.faqCollapse :global(.ant-collapse-item-active) {
+  border-color: var(--active-border) !important;
+}
+
+.faqCollapse :global(.ant-collapse-header) {
+  padding: 18px 22px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--ink) !important;
+  align-items: center !important;
+}
+
+.faqCollapse :global(.ant-collapse-item-active .ant-collapse-header) {
+  color: var(--brand) !important;
+}
+
+.faqCollapse :global(.ant-collapse-content-box) {
+  padding: 4px 22px 20px !important;
+}
+
+.faqAnswer {
+  font-size: 14px !important;
+  color: var(--ink-soft) !important;
+  line-height: 1.65 !important;
+  margin: 0 !important;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .hero {
+    padding: 48px 20px 44px;
+  }
+  .heroTitle {
+    font-size: 28px !important;
+  }
+  .heroStats {
+    gap: 24px;
+  }
+  .heroStatDivider {
+    display: none;
+  }
+  .landingContent {
+    padding: 0 16px 60px;
+  }
+  .ctaInner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
