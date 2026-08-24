@@ -6,7 +6,6 @@ import DashboardPage from "@/components/views/DashboardPage";
 import { Spin } from "antd";
 
 export default function MainPage() {
-  // Добавляем isLoading (или loading) из useAuth
   const { auth, isMounted, isLoading } = useAuth();
 
   if (!isMounted || isLoading) {
@@ -17,6 +16,5 @@ export default function MainPage() {
     );
   }
 
-  // Теперь auth.role точно отражает актуальную роль с бэкенда
   return auth.role === "Guest" ? <LandingPage /> : <DashboardPage />;
 }

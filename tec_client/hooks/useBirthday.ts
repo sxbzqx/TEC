@@ -14,7 +14,7 @@ export const useBirthday = () => {
       try {
         const [upcoming, allRes] = await Promise.all([
           fetchUpcomingBirthdays(),
-          $api.get<IWorker[]>("/workers"),
+          $api.get<IWorker[]>("/workers/birthdays"),
         ]);
 
         // Сортировка: сегодня (первые) -> остальные по дате
