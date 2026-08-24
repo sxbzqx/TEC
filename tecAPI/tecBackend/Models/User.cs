@@ -38,5 +38,5 @@ public partial class User
 
     public sbyte BanAmount { get; set; }
 
-    public DateTime ComeDate { get; set; }
+    public DateTime? ComeDate { get; set; }
 }
