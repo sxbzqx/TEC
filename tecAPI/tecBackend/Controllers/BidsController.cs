@@ -230,30 +230,4 @@ public class BidsController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok(document);
     }
-
-    /// <summary>
-    /// Архив заявок за прошедщие года и месяца.
-    /// </summary>
-    /// <param name="year"></param>
-    /// <param name="month"></param>
-    /// <returns></returns>
-    [HttpGet("{year:int}/{month:int}")]
-    public IActionResult GetDocumentByMonth(int year, int month)
-    {
-        string period = $"{year}{month.ToString().PadLeft(2, '0')}";
-
-        
-        string propertyName = $"Documents{period}s";
-
-        
-        var property = _context.GetType().GetProperty(propertyName);
-
-        if (property == null)
-            return NotFound($"Таблица {propertyName} не найдена в контексте.");
-
-        
-        var dbSet = property.GetValue(_context) as IEnumerable<dynamic>;
-
-        return Ok(dbSet);
-    }
 }
