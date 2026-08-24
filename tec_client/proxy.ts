@@ -21,7 +21,6 @@ const ROUTE_PERMISSIONS: { [key: string]: string[] } = {
   // "/bids": ["SuperAdmin", "Admin", "Worker"],
   "/bids/create": ["Admin", "SuperAdmin", "Worker"],
   "/bids/incoming": ["SuperAdmin", "Admin", "Worker"],
-  "/bids/archive": ["SuperAdmin", "Admin", "Worker"],
   "/create": ["Worker", "Guest", "SuperAdmin", "Admin"],
 };
 

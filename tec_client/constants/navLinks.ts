@@ -93,12 +93,6 @@ export const NAV_LINKS = [
         labelKg: "Келген өтүнмөлөр",
         roles: ["Admin", "SuperAdmin", "Worker"]
       },
-      {
-        key: "/bids/archive",
-        label: "Архив заявок",
-        labelKg: "Өтүнмөлөр архиви",
-        roles: ["Admin", "SuperAdmin", "Worker"],
-      },
     ],
   },
 ];

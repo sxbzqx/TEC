@@ -84,13 +84,6 @@ const SECTIONS: FeatureSection[] = [
     descKey: "secWorkersDesc",
   },
   {
-    href: "/bids/archive",
-    icon: <FileDoneOutlined />,
-    roles: ["Admin", "SuperAdmin"],
-    titleKey: "secBidsTitle",
-    descKey: "secBidsDesc",
-  },
-  {
     href: "/",
     icon: <FileTextOutlined />,
     roles: ["Worker", "Admin", "SuperAdmin"],
