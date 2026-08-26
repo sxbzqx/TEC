@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -177,7 +178,7 @@ public class BidsController : ControllerBase
             DateVyp = document.DateVyp,
         });
     }
-
+    
     /// <summary>
     /// Решение по заявке: разрешить (1), отклонить (2) или отложить (3).
     /// Разрешено принимать решение только для новой заявки (0) или ранее
