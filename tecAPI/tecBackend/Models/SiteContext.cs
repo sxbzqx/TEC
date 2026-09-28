@@ -50,7 +50,7 @@ public partial class SiteContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.HasDefaultSchema("site_db");
+        // modelBuilder.HasDefaultSchema("site_db");
 
         foreach (var entity in modelBuilder.Model.GetEntityTypes())
         {
@@ -64,24 +64,24 @@ public partial class SiteContext : DbContext
 
         modelBuilder.Entity<Department>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id);
 
             entity.ToTable("departments");
 
-            entity.Property(e => e.Id).HasColumnType("smallint(6)").HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnType("smallint").HasColumnName("id");
             entity.Property(e => e.Name).HasColumnType("text").HasColumnName("name");
         });
 
         modelBuilder.Entity<Document>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id);
 
             entity.ToTable("documents");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)").HasColumnName("id");
-            entity.Property(e => e.Action).HasColumnType("smallint(6)").HasColumnName("action");
-            entity.Property(e => e.Amount).HasColumnType("smallint(6)").HasColumnName("amount");
-            entity.Property(e => e.Archive).HasColumnType("smallint(6)").HasColumnName("archive");
+            entity.Property(e => e.Id).HasColumnType("integer").HasColumnName("id");
+            entity.Property(e => e.Action).HasColumnType("smallint").HasColumnName("action");
+            entity.Property(e => e.Amount).HasColumnType("smallint").HasColumnName("amount");
+            entity.Property(e => e.Archive).HasColumnType("smallint").HasColumnName("archive");
             entity.Property(e => e.Comment).HasColumnType("text").HasColumnName("comment");
             entity
                 .Property(e => e.CommentReshenie)
@@ -89,23 +89,23 @@ public partial class SiteContext : DbContext
                 .HasColumnName("comment_reshenie");
             entity
                 .Property(e => e.DateFirst)
-                .HasDefaultValueSql("'0000-00-00 00:00:00'")
-                .HasColumnType("datetime")
+                .HasDefaultValueSql("'0001-01-01 00:00:00'")
+                .HasColumnType("timestamp")
                 .HasColumnName("date_first");
             entity
                 .Property(e => e.DateReshenie)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("date_reshenie");
-            entity.Property(e => e.DateVyp).HasColumnType("datetime").HasColumnName("date_vyp");
+            entity.Property(e => e.DateVyp).HasColumnType("timestamp").HasColumnName("date_vyp");
             entity.Property(e => e.Format).HasColumnType("text").HasColumnName("format");
-            entity.Property(e => e.IdPerUser).HasColumnType("int(11)").HasColumnName("id_per_user");
+            entity.Property(e => e.IdPerUser).HasColumnType("integer").HasColumnName("id_per_user");
             entity.Property(e => e.IdReceiver).HasMaxLength(4).HasColumnName("id_receiver");
             entity
                 .Property(e => e.IdResource)
-                .HasColumnType("int(11)")
+                .HasColumnType("integer")
                 .HasColumnName("id_resource");
             entity.Property(e => e.IdUser).HasMaxLength(4).HasColumnName("id_user");
-            entity.Property(e => e.Made).HasColumnType("smallint(6)").HasColumnName("made");
+            entity.Property(e => e.Made).HasColumnType("smallint").HasColumnName("made");
             entity
                 .Property(e => e.UserReshenie)
                 .HasMaxLength(4)
@@ -115,16 +115,16 @@ public partial class SiteContext : DbContext
 
         modelBuilder.Entity<Otdel>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id);
 
             entity.ToTable("otdel");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)").HasColumnName("id");
-            entity.Property(e => e.IdDep).HasColumnType("int(11)").HasColumnName("id_dep");
-            entity.Property(e => e.IdOtd).HasColumnType("smallint(3)").HasColumnName("id_otd");
+            entity.Property(e => e.Id).HasColumnType("integer").HasColumnName("id");
+            entity.Property(e => e.IdDep).HasColumnType("integer").HasColumnName("id_dep");
+            entity.Property(e => e.IdOtd).HasColumnType("smallint").HasColumnName("id_otd");
             entity
                 .Property(e => e.IdOtdBuhgalter)
-                .HasColumnType("tinyint(2)")
+                .HasColumnType("smallint")
                 .HasColumnName("idotd_buhgalter");
             entity
                 .Property(e => e.NameOtd)
@@ -159,11 +159,11 @@ public partial class SiteContext : DbContext
 
         modelBuilder.Entity<Resource>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id);
 
             entity.ToTable("resources");
 
-            entity.Property(e => e.Id).HasColumnType("smallint(6)").HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnType("smallint").HasColumnName("id");
             entity
                 .Property(e => e.IdOtd)
                 .HasMaxLength(4)
@@ -171,7 +171,7 @@ public partial class SiteContext : DbContext
                 .HasColumnName("id_otd");
             entity
                 .Property(e => e.IdParent)
-                .HasColumnType("smallint(6)")
+                .HasColumnType("smallint")
                 .HasColumnName("id_parent");
             entity.Property(e => e.Name).HasColumnType("text").HasColumnName("name");
             entity
@@ -183,26 +183,26 @@ public partial class SiteContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id);
 
             entity.ToTable("users");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)").HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnType("integer").HasColumnName("id");
             entity.Property(e => e.Answer).HasColumnType("text").HasColumnName("answer");
-            entity.Property(e => e.Ban).HasColumnType("tinyint(4)").HasColumnName("ban");
+            entity.Property(e => e.Ban).HasColumnType("smallint").HasColumnName("ban");
             entity
                 .Property(e => e.BanAmount)
-                .HasColumnType("tinyint(4)")
+                .HasColumnType("smallint")
                 .HasColumnName("ban_amount");
             entity.Property(e => e.BanComment).HasMaxLength(500).HasColumnName("ban_comment");
             entity.Property(e => e.BanDate).HasColumnType("date").HasColumnName("ban_date");
             entity
                 .Property(e => e.ComeDate)
                 .HasComment("время и дата загрузки чата")
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("comedate");
-            entity.Property(e => e.IdGroup).HasColumnType("smallint(6)").HasColumnName("id_group");
-            entity.Property(e => e.IdPost).HasColumnType("smallint(6)").HasColumnName("id_post");
+            entity.Property(e => e.IdGroup).HasColumnType("smallint").HasColumnName("id_group");
+            entity.Property(e => e.IdPost).HasColumnType("smallint").HasColumnName("id_post");
             entity
                 .Property(e => e.Login)
                 .HasMaxLength(20)
@@ -220,13 +220,13 @@ public partial class SiteContext : DbContext
 
         modelBuilder.Entity<Worker>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id);
 
             entity.ToTable("workers", tb => tb.HasComment("Справочник сотрудников"));
 
             entity.HasIndex(e => e.Id, "id").IsUnique();
 
-            entity.Property(e => e.Id).HasColumnType("int(11)").HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnType("integer").HasColumnName("id");
             entity.Property(e => e.Address).HasMaxLength(250).HasColumnName("address");
             entity.Property(e => e.DatePriem).HasColumnType("date").HasColumnName("datepriem");
             entity.Property(e => e.Doljnost).HasMaxLength(150).HasColumnName("doljnost");
@@ -270,13 +270,13 @@ public partial class SiteContext : DbContext
 
         modelBuilder.Entity<Workers18062024>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id);
 
             entity.ToTable("workers18-06-2024", tb => tb.HasComment("Справочник сотрудников"));
 
             entity.HasIndex(e => e.Id, "id").IsUnique();
 
-            entity.Property(e => e.Id).HasColumnType("int(11)").HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnType("integer").HasColumnName("id");
             entity.Property(e => e.Address).HasMaxLength(250).HasColumnName("address");
             entity.Property(e => e.DatePriem).HasColumnType("date").HasColumnName("datePriem");
             entity.Property(e => e.Doljnost).HasMaxLength(150).HasColumnName("doljnost");
@@ -301,13 +301,13 @@ public partial class SiteContext : DbContext
 
         modelBuilder.Entity<Workers1otdel>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id);
 
             entity.ToTable("workers_1otdel", tb => tb.HasComment("Справочник сотрудников"));
 
             entity.HasIndex(e => e.Id, "id").IsUnique();
 
-            entity.Property(e => e.Id).HasColumnType("int(11)").HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnType("integer").HasColumnName("id");
             entity.Property(e => e.Address).HasMaxLength(250).HasColumnName("address");
             entity.Property(e => e.DatePriem).HasColumnType("date").HasColumnName("datePriem");
             entity.Property(e => e.Doljnost).HasMaxLength(150).HasColumnName("doljnost");
@@ -345,7 +345,7 @@ public partial class SiteContext : DbContext
             entity.Property(e => e.Doljnost).HasMaxLength(150).HasColumnName("doljnost");
             entity.Property(e => e.Dr).HasColumnType("date").HasColumnName("DR");
             entity.Property(e => e.Fio).HasMaxLength(50).HasColumnName("FIO");
-            entity.Property(e => e.Id).HasColumnType("int(11)").HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnType("integer").HasColumnName("id");
             entity.Property(e => e.Ids).HasMaxLength(9).HasColumnName("IDs");
             entity
                 .Property(e => e.KategoriyaId)
@@ -361,13 +361,13 @@ public partial class SiteContext : DbContext
 
         modelBuilder.Entity<WorkersEmpty>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id);
 
             entity.ToTable("workers_empty", tb => tb.HasComment("Справочник сотрудников"));
 
             entity.HasIndex(e => e.Id, "id").IsUnique();
 
-            entity.Property(e => e.Id).HasColumnType("int(11)").HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnType("integer").HasColumnName("id");
             entity.Property(e => e.Address).HasMaxLength(250).HasColumnName("address");
             entity.Property(e => e.DatePriem).HasColumnType("date").HasColumnName("datePriem");
             entity.Property(e => e.Doljnost).HasMaxLength(150).HasColumnName("doljnost");
@@ -389,21 +389,21 @@ public partial class SiteContext : DbContext
 
         modelBuilder.Entity<Zayavkatmc>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id);
 
             entity.ToTable("zayavkatmc");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)").HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnType("integer").HasColumnName("id");
             entity
                 .Property(e => e.Action)
                 .HasMaxLength(1)
                 .HasComment("действие: 0-новая,1-прочитанная,2-выполненная,3-отложенная,4-отказная")
                 .HasColumnName("action");
-            entity.Property(e => e.Date).HasColumnType("datetime").HasColumnName("date");
+            entity.Property(e => e.Date).HasColumnType("timestamp").HasColumnName("date");
             entity
                 .Property(e => e.DateAction)
                 .HasComment("дата разрешения заявки")
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("dateAction");
             entity.Property(e => e.IdDep).HasMaxLength(4).HasColumnName("id_dep");
             entity.Property(e => e.IdOborud).HasMaxLength(10).HasColumnName("idOborud");
@@ -416,17 +416,17 @@ public partial class SiteContext : DbContext
 
         modelBuilder.Entity<ActivityLog>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id);
 
             entity.ToTable("activity_log");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)").HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnType("integer").HasColumnName("id");
             entity.Property(e => e.Action).HasMaxLength(50).HasColumnName("action");
             entity.Property(e => e.Title).HasMaxLength(255).HasColumnName("title");
             entity.Property(e => e.Subtitle).HasMaxLength(255).HasColumnName("subtitle");
             entity
                 .Property(e => e.ActorUserId)
-                .HasColumnType("int(11)")
+                .HasColumnType("integer")
                 .HasColumnName("actor_user_id");
             entity.Property(e => e.CreatedAt).HasColumnType("timestamp").HasColumnName("created_at");
         });

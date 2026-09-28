@@ -17,7 +17,6 @@ namespace tecBackend.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("site_db")
                 .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -27,7 +26,7 @@ namespace tecBackend.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
@@ -39,7 +38,7 @@ namespace tecBackend.Migrations
                         .HasColumnName("action");
 
                     b.Property<int?>("ActorUserId")
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("actor_user_id");
 
                     b.Property<DateTime>("CreatedAt")
@@ -57,10 +56,9 @@ namespace tecBackend.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("title");
 
-                    b.HasKey("Id")
-                        .HasName("PRIMARY");
+                    b.HasKey("Id");
 
-                    b.ToTable("activity_log", "site_db");
+                    b.ToTable("activity_log", (string)null);
                 });
 
             modelBuilder.Entity("tecBackend.Models.Category", b =>
@@ -80,14 +78,14 @@ namespace tecBackend.Migrations
                     b.HasKey("Id")
                         .HasName("categories_pkey");
 
-                    b.ToTable("categories", "site_db");
+                    b.ToTable("categories", (string)null);
                 });
 
             modelBuilder.Entity("tecBackend.Models.Department", b =>
                 {
                     b.Property<short>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint(6)")
+                        .HasColumnType("smallint")
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<short>("Id"));
@@ -96,31 +94,30 @@ namespace tecBackend.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.HasKey("Id")
-                        .HasName("PRIMARY");
+                    b.HasKey("Id");
 
-                    b.ToTable("departments", "site_db");
+                    b.ToTable("departments", (string)null);
                 });
 
             modelBuilder.Entity("tecBackend.Models.Document", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<short>("Action")
-                        .HasColumnType("smallint(6)")
+                        .HasColumnType("smallint")
                         .HasColumnName("action");
 
                     b.Property<short?>("Amount")
-                        .HasColumnType("smallint(6)")
+                        .HasColumnType("smallint")
                         .HasColumnName("amount");
 
                     b.Property<short>("Archive")
-                        .HasColumnType("smallint(6)")
+                        .HasColumnType("smallint")
                         .HasColumnName("archive");
 
                     b.Property<string>("Comment")
@@ -135,16 +132,16 @@ namespace tecBackend.Migrations
 
                     b.Property<DateTime>("DateFirst")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
+                        .HasColumnType("timestamp")
                         .HasColumnName("date_first")
-                        .HasDefaultValueSql("'0000-00-00 00:00:00'");
+                        .HasDefaultValueSql("'0001-01-01 00:00:00'");
 
                     b.Property<DateTime?>("DateReshenie")
-                        .HasColumnType("datetime")
+                        .HasColumnType("timestamp")
                         .HasColumnName("date_reshenie");
 
                     b.Property<DateTime?>("DateVyp")
-                        .HasColumnType("datetime")
+                        .HasColumnType("timestamp")
                         .HasColumnName("date_vyp");
 
                     b.Property<string>("Format")
@@ -152,7 +149,7 @@ namespace tecBackend.Migrations
                         .HasColumnName("format");
 
                     b.Property<int>("IdPerUser")
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("id_per_user");
 
                     b.Property<string>("IdReceiver")
@@ -162,7 +159,7 @@ namespace tecBackend.Migrations
                         .HasColumnName("id_receiver");
 
                     b.Property<int>("IdResource")
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("id_resource");
 
                     b.Property<string>("IdUser")
@@ -172,7 +169,7 @@ namespace tecBackend.Migrations
                         .HasColumnName("id_user");
 
                     b.Property<short>("Made")
-                        .HasColumnType("smallint(6)")
+                        .HasColumnType("smallint")
                         .HasColumnName("made");
 
                     b.Property<string>("UserReshenie")
@@ -182,31 +179,30 @@ namespace tecBackend.Migrations
                         .HasColumnName("user_reshenie")
                         .HasComment("Пользователь, который разрешил/отклонил заявку");
 
-                    b.HasKey("Id")
-                        .HasName("PRIMARY");
+                    b.HasKey("Id");
 
-                    b.ToTable("documents", "site_db");
+                    b.ToTable("documents", (string)null);
                 });
 
             modelBuilder.Entity("tecBackend.Models.Otdel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("IdDep")
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("id_dep");
 
                     b.Property<short>("IdOtd")
-                        .HasColumnType("smallint(3)")
+                        .HasColumnType("smallint")
                         .HasColumnName("id_otd");
 
                     b.Property<short?>("IdOtdBuhgalter")
-                        .HasColumnType("tinyint(2)")
+                        .HasColumnType("smallint")
                         .HasColumnName("idotd_buhgalter");
 
                     b.Property<string>("NameOtd")
@@ -217,10 +213,9 @@ namespace tecBackend.Migrations
                         .HasColumnName("name_otd")
                         .HasDefaultValueSql("''");
 
-                    b.HasKey("Id")
-                        .HasName("PRIMARY");
+                    b.HasKey("Id");
 
-                    b.ToTable("otdel", "site_db");
+                    b.ToTable("otdel", (string)null);
                 });
 
             modelBuilder.Entity("tecBackend.Models.Post", b =>
@@ -265,14 +260,14 @@ namespace tecBackend.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("news_posts", "site_db");
+                    b.ToTable("news_posts", (string)null);
                 });
 
             modelBuilder.Entity("tecBackend.Models.Resource", b =>
                 {
                     b.Property<short>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint(6)")
+                        .HasColumnType("smallint")
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<short>("Id"));
@@ -285,7 +280,7 @@ namespace tecBackend.Migrations
                         .HasComment("Код отдела, который исполняет эту заявку");
 
                     b.Property<short?>("IdParent")
-                        .HasColumnType("smallint(6)")
+                        .HasColumnType("smallint")
                         .HasColumnName("id_parent");
 
                     b.Property<string>("Name")
@@ -300,17 +295,16 @@ namespace tecBackend.Migrations
                         .HasColumnName("priznak")
                         .HasComment("1=замена, 2=установка");
 
-                    b.HasKey("Id")
-                        .HasName("PRIMARY");
+                    b.HasKey("Id");
 
-                    b.ToTable("resources", "site_db");
+                    b.ToTable("resources", (string)null);
                 });
 
             modelBuilder.Entity("tecBackend.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
@@ -320,11 +314,11 @@ namespace tecBackend.Migrations
                         .HasColumnName("answer");
 
                     b.Property<short>("Ban")
-                        .HasColumnType("tinyint(4)")
+                        .HasColumnType("smallint")
                         .HasColumnName("ban");
 
                     b.Property<short>("BanAmount")
-                        .HasColumnType("tinyint(4)")
+                        .HasColumnType("smallint")
                         .HasColumnName("ban_amount");
 
                     b.Property<string>("BanComment")
@@ -336,17 +330,17 @@ namespace tecBackend.Migrations
                         .HasColumnType("date")
                         .HasColumnName("ban_date");
 
-                    b.Property<DateTime>("ComeDate")
-                        .HasColumnType("datetime")
+                    b.Property<DateTime?>("ComeDate")
+                        .HasColumnType("timestamp")
                         .HasColumnName("comedate")
                         .HasComment("время и дата загрузки чата");
 
                     b.Property<short?>("IdGroup")
-                        .HasColumnType("smallint(6)")
+                        .HasColumnType("smallint")
                         .HasColumnName("id_group");
 
                     b.Property<short>("IdPost")
-                        .HasColumnType("smallint(6)")
+                        .HasColumnType("smallint")
                         .HasColumnName("id_post");
 
                     b.Property<string>("Login")
@@ -363,7 +357,7 @@ namespace tecBackend.Migrations
                         .HasColumnName("mail");
 
                     b.Property<int?>("OtdelId")
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("otdelid");
 
                     b.Property<string>("Password")
@@ -387,12 +381,11 @@ namespace tecBackend.Migrations
                         .HasColumnType("character varying(5)")
                         .HasColumnName("tabel");
 
-                    b.HasKey("Id")
-                        .HasName("PRIMARY");
+                    b.HasKey("Id");
 
                     b.HasIndex("OtdelId");
 
-                    b.ToTable("users", "site_db");
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("tecBackend.Models.UserSession", b =>
@@ -419,14 +412,14 @@ namespace tecBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("user_sessions", "site_db");
+                    b.ToTable("user_sessions");
                 });
 
             modelBuilder.Entity("tecBackend.Models.Worker", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
@@ -523,13 +516,12 @@ namespace tecBackend.Migrations
                         .HasColumnType("character varying(4)")
                         .HasColumnName("tabel");
 
-                    b.HasKey("Id")
-                        .HasName("PRIMARY");
+                    b.HasKey("Id");
 
                     b.HasIndex(new[] { "Id" }, "id")
                         .IsUnique();
 
-                    b.ToTable("workers", "site_db", t =>
+                    b.ToTable("workers", null, t =>
                         {
                             t.HasComment("Справочник сотрудников");
                         });
@@ -539,7 +531,7 @@ namespace tecBackend.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
@@ -614,14 +606,13 @@ namespace tecBackend.Migrations
                         .HasColumnType("character varying(4)")
                         .HasColumnName("TABEL");
 
-                    b.HasKey("Id")
-                        .HasName("PRIMARY");
+                    b.HasKey("Id");
 
                     b.HasIndex(new[] { "Id" }, "id")
                         .IsUnique()
                         .HasDatabaseName("id1");
 
-                    b.ToTable("workers18-06-2024", "site_db", t =>
+                    b.ToTable("workers18-06-2024", null, t =>
                         {
                             t.HasComment("Справочник сотрудников");
                         });
@@ -631,7 +622,7 @@ namespace tecBackend.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
@@ -707,14 +698,13 @@ namespace tecBackend.Migrations
                         .HasColumnType("character varying(4)")
                         .HasColumnName("TABEL");
 
-                    b.HasKey("Id")
-                        .HasName("PRIMARY");
+                    b.HasKey("Id");
 
                     b.HasIndex(new[] { "Id" }, "id")
                         .IsUnique()
                         .HasDatabaseName("id2");
 
-                    b.ToTable("workers_1otdel", "site_db", t =>
+                    b.ToTable("workers_1otdel", null, t =>
                         {
                             t.HasComment("Справочник сотрудников");
                         });
@@ -749,7 +739,7 @@ namespace tecBackend.Migrations
                         .HasColumnName("FIO");
 
                     b.Property<int>("Id")
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
 
                     b.Property<string>("Ids")
@@ -795,7 +785,7 @@ namespace tecBackend.Migrations
                         .HasColumnType("character varying(4)")
                         .HasColumnName("TABEL");
 
-                    b.ToTable("workers_copy", "site_db", t =>
+                    b.ToTable("workers_copy", null, t =>
                         {
                             t.HasComment("Справочник сотрудников");
                         });
@@ -805,7 +795,7 @@ namespace tecBackend.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
@@ -885,14 +875,13 @@ namespace tecBackend.Migrations
                         .HasColumnType("character varying(4)")
                         .HasColumnName("TABEL");
 
-                    b.HasKey("Id")
-                        .HasName("PRIMARY");
+                    b.HasKey("Id");
 
                     b.HasIndex(new[] { "Id" }, "id")
                         .IsUnique()
                         .HasDatabaseName("id3");
 
-                    b.ToTable("workers_empty", "site_db", t =>
+                    b.ToTable("workers_empty", null, t =>
                         {
                             t.HasComment("Справочник сотрудников");
                         });
@@ -902,7 +891,7 @@ namespace tecBackend.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int(11)")
+                        .HasColumnType("integer")
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
@@ -915,11 +904,11 @@ namespace tecBackend.Migrations
                         .HasComment("действие: 0-новая,1-прочитанная,2-выполненная,3-отложенная,4-отказная");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime")
+                        .HasColumnType("timestamp")
                         .HasColumnName("date");
 
                     b.Property<DateTime>("DateAction")
-                        .HasColumnType("datetime")
+                        .HasColumnType("timestamp")
                         .HasColumnName("dateAction")
                         .HasComment("дата разрешения заявки");
 
@@ -965,10 +954,9 @@ namespace tecBackend.Migrations
                         .HasColumnType("character varying(1)")
                         .HasColumnName("sposob");
 
-                    b.HasKey("Id")
-                        .HasName("PRIMARY");
+                    b.HasKey("Id");
 
-                    b.ToTable("zayavkatmc", "site_db");
+                    b.ToTable("zayavkatmc", (string)null);
                 });
 
             modelBuilder.Entity("tecBackend.Models.Post", b =>

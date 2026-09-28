@@ -191,6 +191,12 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<SiteContext>();
+    await dbContext.Database.MigrateAsync();
+}
+
 app.UseRouting();
 
 app.UseCors("AllowNextJS");
