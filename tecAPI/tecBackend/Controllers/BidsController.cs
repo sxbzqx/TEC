@@ -84,7 +84,7 @@ public class BidsController : ControllerBase
         if (user?.Otdel == null)
             return Ok(Array.Empty<DocumentIncomingDto>());
 
-        var otdelCode = user.Otdel.IdOtd.ToString();
+        var otdelCode = user.Otdel.Id.ToString();
 
         var documents = await _context.Documents
             .Where(d => d.IdReceiver == otdelCode && d.Archive == 0)
@@ -151,7 +151,7 @@ public class BidsController : ControllerBase
         if (document == null)
             return NotFound();
 
-        if (user?.Otdel == null || document.IdReceiver != user.Otdel.IdOtd.ToString())
+        if (user?.Otdel == null || document.IdReceiver != user.Otdel.Id.ToString())
             return Forbid();
 
         var resource = await _context.Resources.FirstOrDefaultAsync(r => r.Id == document.IdResource);

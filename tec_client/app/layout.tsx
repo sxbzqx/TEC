@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { Golos_Text } from "next/font/google";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import Providers from "./providers";
-import Navbar from "@/components/navbar/Navbar";
+import Sidebar from "@/components/navbar/Sidebar";
 import FooterWrapper from "@/components/navbar/Footer";
 import { App, Layout } from "antd";
 import { Content } from "antd/es/layout/layout";
@@ -55,10 +55,12 @@ export default async function RootLayout({
             <AuthProvider initialAuth={initialAuth}>
               <App>
                 {/* <ContextMenuWrapper>  кастом контекст меню (ПКМ) */}
-                  <Layout style={{ minHeight: "100vh" }}>
-                    <Navbar />
-                    <Content style={{ padding: 0 }}>{children}</Content>
-                    <FooterWrapper />
+                  <Layout hasSider style={{ minHeight: "100vh" }}>
+                    <Sidebar />
+                    <Layout style={{ minWidth: 0 }}>
+                      <Content style={{ padding: 0 }}>{children}</Content>
+                      <FooterWrapper />
+                    </Layout>
                   </Layout>
                 {/* </ContextMenuWrapper> */}
               </App>

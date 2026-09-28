@@ -120,12 +120,6 @@ public partial class SiteContext : DbContext
             entity.ToTable("otdel");
 
             entity.Property(e => e.Id).HasColumnType("integer").HasColumnName("id");
-            entity.Property(e => e.IdDep).HasColumnType("integer").HasColumnName("id_dep");
-            entity.Property(e => e.IdOtd).HasColumnType("smallint").HasColumnName("id_otd");
-            entity
-                .Property(e => e.IdOtdBuhgalter)
-                .HasColumnType("smallint")
-                .HasColumnName("idotd_buhgalter");
             entity
                 .Property(e => e.NameOtd)
                 .HasMaxLength(20)

@@ -1,0 +1,226 @@
+/* Sidebar полностью на CSS-переменных из globals.css,
+   поэтому цвета сами меняются вместе с [data-theme]. */
+
+.sider {
+  background: var(--surface) !important;
+  border-right: 1px solid var(--border-strong);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ── Верх: бренд + сворачивание ── */
+.top {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.brandMark {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brandText {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Меню ── */
+.nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 8px;
+}
+
+.nav :global(.ant-menu) {
+  background: transparent !important;
+  border-inline-end: none !important;
+}
+
+/* ── Низ ── */
+.bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid var(--border-strong);
+  flex-shrink: 0;
+}
+
+.bottomCollapsed {
+  align-items: center;
+  padding: 12px 0;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.controlsCollapsed {
+  flex-direction: column;
+}
+
+/* Переключатель языка (пилюля) */
+.locale {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border-strong);
+}
+
+.localeOpt {
+  border: none;
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  padding: 4px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.localeOpt:hover {
+  color: var(--brand);
+}
+
+.localeOptActive,
+.localeOptActive:hover {
+  background: var(--brand);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(83, 74, 183, 0.35);
+}
+
+.localeOpt:focus-visible,
+.iconBtn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Квадратная иконка-кнопка (тема, язык в свёрнутом виде) */
+.iconBtn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-soft);
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.iconBtn:hover {
+  border-color: var(--hover-border);
+  color: var(--brand);
+  background: var(--surface-hover);
+}
+
+.iconBtn :global(.anticon) {
+  font-size: 16px;
+}
+
+.bulbOn {
+  color: var(--warning) !important;
+}
+
+/* Карточка пользователя */
+.user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border-strong);
+  min-width: 0;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.userName {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userRole {
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.userRoleSuper {
+  color: var(--danger);
+}
