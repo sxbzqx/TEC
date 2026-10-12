@@ -17,3 +17,9 @@
 
 # Changelogs
 CHANGELOG.md
+
+# Manual
+manuals/*
+
+
+.pnpm-store/

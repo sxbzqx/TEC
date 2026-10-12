@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import {
   Table,
   Input,
@@ -12,32 +11,16 @@ import {
   Descriptions,
   Tooltip,
   Alert,
+  Card,
+  Space,
+  Typography,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { SearchOutlined } from "@ant-design/icons";
+import { EyeOutlined, DesktopOutlined } from "@ant-design/icons";
+import { $api } from "@/app/api/api";
+import { OfficeComputer } from "@/types/officeComputer";
 
-interface OfficeComputer {
-  id: number;
-  invNum: string;
-  networkName: string;
-  phone: string;
-  name: string;
-  department: string;
-  userDep: string;
-  userFio: string;
-  cpu: string;
-  ram1: string;
-  ram2: string;
-  hdd1: string;
-  hdd2: string;
-  optical: string;
-  video: string;
-  audio: string;
-  speakers: string;
-  monitor: string;
-  inputMonth: string;
-  inputYear: string;
-}
+const { Title, Text } = Typography;
 
 const HeaderFilter = ({
   title,
@@ -46,9 +29,13 @@ const HeaderFilter = ({
   title: string;
   children: React.ReactNode;
 }) => (
-  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-    <span>{title}</span>
-    <div onClick={(e) => e.stopPropagation()}>{children}</div>
+  <div
+    style={{ display: "flex", flexDirection: "column", gap: 6, paddingTop: 4, paddingBottom: 4 }}
+    onClick={(e) => e.stopPropagation()}
+    onMouseDown={(e) => e.stopPropagation()}
+  >
+    <Text strong style={{ fontSize: 13, color: "#262626" }}>{title}</Text>
+    {children}
   </div>
 );
 
@@ -59,9 +46,7 @@ export default function OfficeComputersPage() {
   const { data = [], isLoading, error } = useQuery<OfficeComputer[]>({
     queryKey: ["office-computers"],
     queryFn: async () => {
-      const res = await axios.get<OfficeComputer[]>("/api/OfficeComputers", {
-        withCredentials: true,
-      });
+      const res = await $api.get<OfficeComputer[]>("/OfficeEquipment/computers");
       return res.data;
     },
     staleTime: 5 * 60 * 1000,
@@ -97,64 +82,107 @@ export default function OfficeComputersPage() {
     {
       title: (
         <HeaderFilter title="Инвентарный номер">
-          <Input size="small" value={inv} onChange={(e) => setInv(e.target.value)} />
+          <Input
+            size="small"
+            placeholder="Фильтр..."
+            value={inv}
+            onChange={(e) => setInv(e.target.value)}
+            allowClear
+          />
         </HeaderFilter>
       ),
       dataIndex: "invNum",
       width: 150,
+      render: (val) => <Text code>{val || "—"}</Text>,
     },
     {
       title: (
         <HeaderFilter title="Сетевое имя">
-          <Input size="small" value={net} onChange={(e) => setNet(e.target.value)} />
+          <Input
+            size="small"
+            placeholder="Фильтр..."
+            value={net}
+            onChange={(e) => setNet(e.target.value)}
+            allowClear
+          />
         </HeaderFilter>
       ),
       dataIndex: "networkName",
       width: 140,
+      render: (val) => <Text strong>{val || "—"}</Text>,
     },
     {
       title: (
-        <HeaderFilter title="Номер телефона">
-          <Input size="small" value={phone} onChange={(e) => setPhone(e.target.value)} />
+        <HeaderFilter title="Телефон">
+          <Input
+            size="small"
+            placeholder="Фильтр..."
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            allowClear
+          />
         </HeaderFilter>
       ),
       dataIndex: "phone",
-      width: 130,
+      width: 120,
     },
-    { title: "Наименование", dataIndex: "name", ellipsis: true },
+    {
+      title: <div style={{ padding: "16px 0 6px" }}>Наименование</div>,
+      dataIndex: "name",
+      ellipsis: true,
+      width: 200,
+    },
     {
       title: (
         <HeaderFilter title="Отдел">
           <Select
             size="small"
             allowClear
+            showSearch
+            placeholder="Все отделы"
             value={dept}
             onChange={(v: string | undefined) => setDept(v)}
             style={{ width: "100%" }}
             options={departments.map((d) => ({ value: d, label: d }))}
+            optionFilterProp="label"
           />
         </HeaderFilter>
       ),
       dataIndex: "department",
       ellipsis: true,
+      width: 220,
     },
-    { title: "Пользователь", dataIndex: "userDep", width: 140 },
-    { title: "ФИО пользователя", dataIndex: "userFio", ellipsis: true },
     {
-      title: "Введен в эксплуатацию",
+      title: <div style={{ padding: "16px 0 6px" }}>Пользователь</div>,
+      dataIndex: "userDep",
       width: 150,
-      render: (_: unknown, r: OfficeComputer) =>
-        r.inputMonth || r.inputYear ? `${r.inputMonth}-${r.inputYear}` : "",
+      ellipsis: true,
     },
     {
-      title: "Действия",
+      title: <div style={{ padding: "16px 0 6px" }}>ФИО пользователя</div>,
+      dataIndex: "userFio",
+      ellipsis: true,
+      width: 200,
+    },
+    {
+      title: <div style={{ padding: "16px 0 6px" }}>В эксплуатации</div>,
+      width: 130,
+      render: (_: unknown, r: OfficeComputer) =>
+        r.inputMonth || r.inputYear ? (
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            {r.inputMonth} {r.inputYear}
+          </Text>
+        ) : "—",
+    },
+    {
+      title: <div style={{ padding: "16px 0 6px" }}>Действия</div>,
       width: 90,
       align: "center",
       render: (_: unknown, r: OfficeComputer) => (
-        <Tooltip title="Подробнее">
+        <Tooltip title="Просмотреть характеристики">
           <Button
             type="text"
-            icon={<SearchOutlined />}
+            icon={<EyeOutlined style={{ color: "#4f46e5" }} />}
             onClick={() => setSelected(r)}
           />
         </Tooltip>
@@ -163,47 +191,92 @@ export default function OfficeComputersPage() {
   ];
 
   return (
-    <>
+    <div style={{ padding: "24px" }}>
+      <div style={{ marginBottom: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          <Title level={3} style={{ margin: 0, display: "flex", alignItems: "center", gap: 10 }}>
+            <DesktopOutlined /> Учет офисной техники
+          </Title>
+          <Text type="secondary">Реестр персональных компьютеров и рабочих станций ТЭЦ</Text>
+        </div>
+      </div>
+
       {error && (
         <Alert
           type="error"
           showIcon
-          message="Не удалось загрузить список техники"
+          message="Не удалось загрузить список техники с сервера"
           style={{ marginBottom: 16 }}
         />
       )}
 
-      <Table<OfficeComputer>
-        rowKey="id"
-        size="small"
-        loading={isLoading}
-        columns={columns}
-        dataSource={rows}
-        pagination={{ pageSize: 25, showSizeChanger: false }}
-        scroll={{ x: 1200 }}
-      />
+      {/* Обертка с аккуратной рамкой */}
+      <Card
+        bodyStyle={{ padding: 0 }}
+        bordered={true}
+        style={{
+          border: "1px solid #e5e7eb",
+          boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.02)",
+          borderRadius: 8,
+          overflow: "hidden"
+        }}
+      >
+        <Table<OfficeComputer>
+          rowKey="id"
+          size="middle"
+          bordered
+          loading={isLoading}
+          columns={columns}
+          dataSource={rows}
+          pagination={{ pageSize: 20, showSizeChanger: true, pageSizeOptions: ["10", "20", "50"] }}
+          scroll={{ x: 1300 }}
+        />
+      </Card>
 
       <Drawer
         open={!!selected}
         onClose={() => setSelected(null)}
-        width={480}
-        title={selected?.name}
+        width={520}
+        title={
+          <Space>
+            <DesktopOutlined style={{ color: "#4f46e5" }} />
+            <span>{selected?.name || "Информация о ПК"}</span>
+          </Space>
+        }
       >
         {selected && (
-          <Descriptions column={1} size="small" bordered>
-            <Descriptions.Item label="Процессор">{selected.cpu}</Descriptions.Item>
-            <Descriptions.Item label="ОЗУ 1">{selected.ram1}</Descriptions.Item>
-            <Descriptions.Item label="ОЗУ 2">{selected.ram2}</Descriptions.Item>
-            <Descriptions.Item label="HDD 1">{selected.hdd1}</Descriptions.Item>
-            <Descriptions.Item label="HDD 2">{selected.hdd2}</Descriptions.Item>
-            <Descriptions.Item label="Оптический привод">{selected.optical}</Descriptions.Item>
-            <Descriptions.Item label="Видео">{selected.video}</Descriptions.Item>
-            <Descriptions.Item label="Аудио">{selected.audio}</Descriptions.Item>
-            <Descriptions.Item label="Колонки">{selected.speakers}</Descriptions.Item>
-            <Descriptions.Item label="Монитор">{selected.monitor}</Descriptions.Item>
-          </Descriptions>
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            <Descriptions title="Параметры владельца" column={1} size="small" bordered>
+              <Descriptions.Item label="Инвентарный номер">
+                <Text code>{selected.invNum || "—"}</Text>
+              </Descriptions.Item>
+              <Descriptions.Item label="Сетевое имя">
+                <Text strong>{selected.networkName || "—"}</Text>
+              </Descriptions.Item>
+              <Descriptions.Item label="Отдел">{selected.department || "—"}</Descriptions.Item>
+              <Descriptions.Item label="Подразделение / Склад">{selected.userDep || "—"}</Descriptions.Item>
+              <Descriptions.Item label="ФИО сотрудника">{selected.userFio || "—"}</Descriptions.Item>
+              <Descriptions.Item label="Телефон">{selected.phone || "—"}</Descriptions.Item>
+              <Descriptions.Item label="Ввод в эксплуатацию">
+                {selected.inputMonth || selected.inputYear ? `${selected.inputMonth} ${selected.inputYear}` : "Не указано"}
+              </Descriptions.Item>
+            </Descriptions>
+
+            <Descriptions title="Аппаратная база" column={1} size="small" bordered>
+              <Descriptions.Item label="Процессор">{selected.cpu || "—"}</Descriptions.Item>
+              <Descriptions.Item label="ОЗУ (Слот 1)">{selected.ram1 || "—"}</Descriptions.Item>
+              <Descriptions.Item label="ОЗУ (Слот 2)">{selected.ram2 || "—"}</Descriptions.Item>
+              <Descriptions.Item label="Накопитель (HDD/SSD 1)">{selected.hdd1 || "—"}</Descriptions.Item>
+              <Descriptions.Item label="Накопитель (HDD/SSD 2)">{selected.hdd2 || "—"}</Descriptions.Item>
+              <Descriptions.Item label="Видеокарта">{selected.video || "—"}</Descriptions.Item>
+              <Descriptions.Item label="Монитор">{selected.monitor || "—"}</Descriptions.Item>
+              <Descriptions.Item label="Оптический привод">{selected.optical || "—"}</Descriptions.Item>
+              <Descriptions.Item label="Аудиоустройство">{selected.audio || "—"}</Descriptions.Item>
+              <Descriptions.Item label="Колонки">{selected.speakers || "—"}</Descriptions.Item>
+            </Descriptions>
+          </div>
         )}
       </Drawer>
-    </>
+    </div>
   );
 }

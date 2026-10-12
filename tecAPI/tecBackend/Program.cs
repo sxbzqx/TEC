@@ -42,7 +42,7 @@ builder.Services.AddCors(options =>
                 .SetIsOriginAllowed(origin =>
                 {
                     if (string.IsNullOrEmpty(origin)) return false;
-                    
+
                     var uri = new Uri(origin);
                     return uri.Host.StartsWith("10.0.4.") || uri.Host == "localhost" || uri.Host == "btec.kg";
                 })
@@ -69,7 +69,7 @@ builder
 // 3. Подключение к БД (PostgreSQL)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<SiteContext>(options => 
+builder.Services.AddDbContext<SiteContext>(options =>
     options.UseNpgsql(connectionString!));
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -173,6 +173,13 @@ builder.Services.AddRateLimiter(options =>
         }
     );
 });
+
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient<OfficeEquipmentService>(client => 
+{
+    client.Timeout = TimeSpan.FromSeconds(15);
+});
+
 
 var app = builder.Build();
 

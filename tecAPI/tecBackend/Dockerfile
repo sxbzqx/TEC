@@ -4,6 +4,11 @@ WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 
+# Устанавливаем системную библиотеку Kerberos для устранения ошибки libgssapi_krb5.so.2
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgssapi-krb5-2 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Step 2: SDK .NET 10
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
@@ -27,6 +32,7 @@ COPY ["tecBackend/", "tecBackend/"]
 WORKDIR "/src/tecBackend"
 RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
     dotnet publish "tecBackend.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
 
 # Step 3: Финальный образ
 FROM base AS final

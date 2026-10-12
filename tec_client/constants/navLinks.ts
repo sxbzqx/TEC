@@ -87,6 +87,24 @@ export const NAV_LINKS = [
         labelKg: "Компьютерлер",
         roles: ["SuperAdmin", "Admin", "Worker"]
       },
+      {
+        key: "/tech/laptops",
+        label: "Ноутбуки",
+        labelKg: "Ноутбуктар",
+        roles: ["SuperAdmin", "Admin", "Worker"]
+      },
+      {
+        key: "/tech/printers",
+        label: "Принтеры",
+        labelKg: "Принтерлер",
+        roles: ["SuperAdmin", "Admin", "Worker"]
+      },
+      {
+        key: "/tech/others",
+        label: "Прочее оборудование",
+        labelKg: "Башка жабдуулар",
+        roles: ["SuperAdmin", "Admin", "Worker"]
+      },
     ],
   },
   {
