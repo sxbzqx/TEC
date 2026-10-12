@@ -52,13 +52,13 @@ services:
       context: ./tec_client
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: https://btec.kg/api-backend
+        NEXT_PUBLIC_API_URL: https://10.0.4.37/api-backend
         API_URL: http://tec_api:8080/api
     container_name: tec_client_app
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=https://btec.kg/api-backend
+      - NEXT_PUBLIC_API_URL=https://10.0.4.37/api-backend
       - API_URL=http://tec_api:8080/api
     depends_on:
       tec_api:

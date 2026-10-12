@@ -41,16 +41,11 @@ export default function FooterWrapper() {
             <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 11 }}>
               {t("footerSubtitle")}
             </Text>
-            <Text style={{ color: "rgba(255,255,255,0.65)" }}>
-              <Link href="#" style={{ color: "rgba(255,255,255, 0.65)", fontSize: 12 }}>
-                {t("footerHistory")}
-              </Link>
-            </Text>
           </div>
         </div>
 
         {/* Блок 2: Навигация */}
-        <Space vertical size={4}>
+        {/* <Space vertical size={4}>
           <Text style={{ color: "#fff", fontSize: 12, marginBottom: 5 }}>
             {t("footerSectionsTitle")}
           </Text>
@@ -72,7 +67,7 @@ export default function FooterWrapper() {
           >
             <ContactsOutlined /> {t("footerContacts")}
           </Link>
-        </Space>
+        </Space> */}
 
         {/* Блок 3: Копирайт и данные карты */}
         <div style={{ textAlign: "right" }}>

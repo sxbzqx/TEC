@@ -12,19 +12,6 @@ export default function DepartmentsList() {
   const columns = [
     { title: t("colId"), dataIndex: "id", key: "id", width: 80 },
     { title: t("colName"), dataIndex: "nameOtd", key: "nameOtd" },
-    {
-      title: t("colOtdelIdCsharp"),
-      dataIndex: "idOtd",
-      key: "idOtd",
-      render: (val: number) => <Tag color="blue">{val}</Tag>
-    },
-    { title: t("colDepartmentId"), dataIndex: "idDep", key: "idDep" },
-    {
-      title: t("colAccountantId"),
-      dataIndex: "idOtdBuhgalter",
-      key: "idOtdBuhgalter",
-      render: (val: any) => val || "—"
-    },
   ];
 
   if (error) return <div>{t("otdelsLoadError")}</div>;

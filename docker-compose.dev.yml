@@ -1,0 +1,43 @@
+services:
+  # --- 1. База данных ---
+  db:
+    ports:
+      - "5432:5432"
+
+  # --- 2. Бэкенд C# ---
+  tec_api:
+    build:
+      context: ./tecAPI/tecBackend
+      dockerfile: Dockerfile.dev
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ./tecAPI/tecBackend:/app
+      - /app/bin
+      - /app/obj
+    entrypoint: []  
+    command: dotnet watch run --urls "http://0.0.0.0:8080"
+    ports:
+      - "8080:8080"
+
+  # --- 3. Фронтенд Next.js ---
+  tec_client:
+    build:
+      context: ./tec_client
+      dockerfile: Dockerfile.dev
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8080/api
+      - WATCHPACK_POLLING=true
+    volumes:
+      - ./tec_client:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+
+  # --- 4. Reverse Proxy Nginx ---
+  nginx:
+    ports:
+      - "80:80"
+      - "443:443"

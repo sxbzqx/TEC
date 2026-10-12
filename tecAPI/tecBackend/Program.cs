@@ -35,17 +35,20 @@ builder.Services.AddCors(options =>
             policy
                 .WithOrigins(
                     "http://localhost:3000",
-                    "http://10.0.4.37:3000",
-                    "https://chp-blond.vercel.app",
-                    "http://btec.kg:3000",
+                    "https://localhost:3000",
                     "http://btec.kg",
-                    "https://10.0.4.37",
-                    "https://btec.kg",
-                    "https://localhost:3000"
+                    "https://btec.kg"
                 )
+                .SetIsOriginAllowed(origin =>
+                {
+                    if (string.IsNullOrEmpty(origin)) return false;
+                    
+                    var uri = new Uri(origin);
+                    return uri.Host.StartsWith("10.0.4.") || uri.Host == "localhost" || uri.Host == "btec.kg";
+                })
                 .AllowAnyHeader()
                 .AllowAnyMethod()
-                .AllowCredentials(); // Полезно, если передаются cookies/credentials
+                .AllowCredentials();
         }
     );
 });

@@ -76,6 +76,20 @@ export const NAV_LINKS = [
     })),
   },
   {
+    key: "tech-sub",
+    label: "Офисная техника",
+    labelKg: "Офистик техника",
+    roles: ["SuperAdmin", "Admin", "Worker"],
+    children: [
+      {
+        key: "/tech",
+        label: "Компьютеры",
+        labelKg: "Компьютерлер",
+        roles: ["SuperAdmin", "Admin", "Worker"]
+      },
+    ],
+  },
+  {
     key: "bids-sub",
     label: "Заявки",
     labelKg: "Өтүнмөлөр",

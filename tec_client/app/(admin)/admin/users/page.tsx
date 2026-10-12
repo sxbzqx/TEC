@@ -131,7 +131,6 @@ export default function AdminUsersPage() {
           onChange={(value) => handleRoleChange(record.id, value)}
           disabled={mutation.isPending}
         >
-          <Select.Option value="Guest">Guest</Select.Option>
           <Select.Option value="User">User</Select.Option>
           <Select.Option value="Worker">Worker</Select.Option>
           <Select.Option value="Admin">Admin</Select.Option>

@@ -17,6 +17,7 @@ import {
   LoginOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  HddOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "@/hooks/useAuth";
 import { useThemeMode } from "@/context/ThemeContext";
@@ -40,6 +41,7 @@ const ICONS: Record<string, React.ReactNode> = {
   workers: <TeamOutlined />,
   "docs-sub": <FileTextOutlined />,
   "bids-sub": <FormOutlined />,
+  "tech-sub": <HddOutlined />,
 };
 
 const findItemByKey = (items: any[], key: string): any => {

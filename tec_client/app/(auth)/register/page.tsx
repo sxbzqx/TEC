@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Input, Button, Alert, Form, Segmented, Descriptions, Space, Typography } from "antd";
+import { Input, Button, Alert, Form, Descriptions, Space, Typography } from "antd";
 import {
   UserOutlined,
   MailOutlined,
@@ -19,15 +19,7 @@ import { useLocale } from "@/context/LocaleContext";
 
 const { Text } = Typography;
 
-type Mode = "plain" | "employee";
 type EmployeeStep = "tabel" | "identity" | "credentials";
-
-interface PlainFormValues {
-  login: string;
-  mail: string;
-  password: string;
-  confirmPassword: string;
-}
 
 interface TabelFormValues {
   tabel: string;
@@ -38,19 +30,69 @@ interface IdentityFormValues {
   birthDate: string;
 }
 
-/** "ДД.ММ.ГГГГ" -> "ГГГГ-ММ-ДД" (ISO), либо null если формат не совпал. */
+interface CredentialsFormValues {
+  login: string;
+  password: string;
+  confirmPassword: string;
+}
+
+/** "ДД.ММ.ГГГГ" -> "ГГГГ-ММ-ДД" (ISO), либо null если дата некорректна. */
 function parseBirthDate(value: string): string | null {
   const match = value.trim().match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
   if (!match) return null;
-  const [, day, month, year] = match;
-  return `${year}-${month}-${day}`;
+
+  const day = parseInt(match[1], 10);
+  const month = parseInt(match[2], 10);
+  const year = parseInt(match[3], 10);
+
+  if (month < 1 || month > 12) return null;
+  if (day < 1 || day > 31) return null;
+
+  // Проверка количества дней в месяце с учетом високосного года
+  const daysInMonth = new Date(year, month, 0).getDate();
+  if (day > daysInMonth) return null;
+
+  const currentYear = new Date().getFullYear();
+  if (year < 1920 || year > currentYear) return null;
+
+  const formattedDay = String(day).padStart(2, "0");
+  const formattedMonth = String(month).padStart(2, "0");
+
+  return `${year}-${formattedMonth}-${formattedDay}`;
 }
 
-interface CredentialsFormValues {
-  login: string;
-  mail: string;
-  password: string;
-  confirmPassword: string;
+/** Автоматическое форматирование даты ДД.ММ.ГГГГ при вводе */
+function formatBirthDateInput(value: string): string {
+  // Оставляем только цифры
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+
+  let formatted = "";
+
+  if (digits.length > 0) {
+    let day = digits.slice(0, 2);
+    // Ограничиваем первую цифру дня (не больше 3)
+    if (parseInt(day[0], 10) > 3) day = "3" + (day[1] || "");
+    // Ограничиваем день до 31
+    if (day.length === 2 && parseInt(day, 10) > 31) day = "31";
+    formatted += day;
+  }
+
+  if (digits.length >= 3) {
+    let month = digits.slice(2, 4);
+    // Ограничиваем первую цифру месяца (не больше 1)
+    if (parseInt(month[0], 10) > 1) month = "1" + (month[1] || "");
+    // Ограничиваем месяц до 12
+    if (month.length === 2 && parseInt(month, 10) > 12) month = "12";
+    if (month.length === 2 && month === "00") month = "01";
+    formatted += "." + month;
+  }
+
+  if (digits.length >= 5) {
+    const year = digits.slice(4, 8);
+    formatted += "." + year;
+  }
+
+  return formatted;
 }
 
 export default function RegisterPage() {
@@ -58,32 +100,15 @@ export default function RegisterPage() {
   const router = useRouter();
   const { refreshAuth } = useAuth();
 
-  const [mode, setMode] = useState<Mode>("plain");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // --- обычный пользователь ---
-  const [plainForm] = Form.useForm<PlainFormValues>();
-
-  const submitPlain = async ({ login, mail, password }: PlainFormValues) => {
-    setError(null);
-    setLoading(true);
-    try {
-      await authService.register(login.trim(), password, mail.trim());
-      await refreshAuth();
-      router.push("/");
-    } catch (err) {
-      setError(getApiErrorMessage(err, t("authRegisterError")));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // --- сотрудник: 3 шага ---
+  // --- Сотрудник: 3 шага ---
   const [employeeStep, setEmployeeStep] = useState<EmployeeStep>("tabel");
   const [tabel, setTabel] = useState("");
   const [lookupResult, setLookupResult] = useState<EmployeeLookupResult | null>(null);
   const [identity, setIdentity] = useState<{ fio: string; birthDate: string } | null>(null);
+
   const [tabelForm] = Form.useForm<TabelFormValues>();
   const [identityForm] = Form.useForm<IdentityFormValues>();
   const [credentialsForm] = Form.useForm<CredentialsFormValues>();
@@ -110,6 +135,7 @@ export default function RegisterPage() {
     setTabel("");
     tabelForm.resetFields();
     identityForm.resetFields();
+    credentialsForm.resetFields();
     setError(null);
   };
 
@@ -134,7 +160,7 @@ export default function RegisterPage() {
     }
   };
 
-  const submitCredentials = async ({ login, mail, password }: CredentialsFormValues) => {
+  const submitCredentials = async ({ login, password }: CredentialsFormValues) => {
     if (!identity) {
       setEmployeeStep("identity");
       return;
@@ -149,7 +175,7 @@ export default function RegisterPage() {
         identity.birthDate,
         login.trim(),
         password,
-        mail.trim(),
+        "" 
       );
       await refreshAuth();
       router.push("/");
@@ -167,21 +193,6 @@ export default function RegisterPage() {
       subtitleLinkHref="/login"
       subtitleLinkText={t("authRegisterLoginLink")}
     >
-      <Segmented
-        block
-        value={mode}
-        onChange={(value) => {
-          setMode(value as Mode);
-          setError(null);
-        }}
-        options={[
-          { label: t("authRegisterModePlain"), value: "plain" },
-          { label: t("authRegisterModeEmployee"), value: "employee" },
-        ]}
-        style={{ marginBottom: 24 }}
-        disabled={loading}
-      />
-
       {error && (
         <Alert
           message={error}
@@ -193,86 +204,8 @@ export default function RegisterPage() {
         />
       )}
 
-      {mode === "plain" && (
-        <Form form={plainForm} layout="vertical" onFinish={submitPlain} requiredMark={false} size="large">
-          <Form.Item name="login" label={t("authLoginFieldLogin")} rules={[{ required: true, message: t("authLoginFieldLoginRequired") }]}>
-            <Input
-              prefix={<UserOutlined style={{ color: "var(--ink-faint)" }} />}
-              placeholder={t("authRegisterPlaceholderLogin")}
-              disabled={loading}
-              autoComplete="username"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="mail"
-            label={t("authRegisterFieldEmail")}
-            rules={[
-              { required: true, message: t("authRegisterFieldEmailRequired") },
-              { type: "email", message: t("authRegisterFieldEmailInvalid") },
-            ]}
-          >
-            <Input
-              prefix={<MailOutlined style={{ color: "var(--ink-faint)" }} />}
-              placeholder="name@example.com"
-              disabled={loading}
-              autoComplete="email"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="password"
-            label={t("authLoginFieldPassword")}
-            rules={[
-              { required: true, message: t("authRegisterFieldPasswordRequired") },
-              { min: 6, message: t("authRegisterFieldPasswordMin") },
-            ]}
-          >
-            <Input.Password
-              prefix={<LockOutlined style={{ color: "var(--ink-faint)" }} />}
-              placeholder="••••••••"
-              disabled={loading}
-              autoComplete="new-password"
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="confirmPassword"
-            label={t("authRegisterFieldConfirm")}
-            dependencies={["password"]}
-            rules={[
-              { required: true, message: t("authRegisterFieldConfirmRequired") },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue("password") === value) return Promise.resolve();
-                  return Promise.reject(new Error(t("authRegisterPasswordsMismatch")));
-                },
-              }),
-            ]}
-          >
-            <Input.Password
-              prefix={<LockOutlined style={{ color: "var(--ink-faint)" }} />}
-              placeholder="••••••••"
-              disabled={loading}
-              autoComplete="new-password"
-            />
-          </Form.Item>
-
-          <Form.Item style={{ marginBottom: 0, marginTop: 8 }}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              block
-              loading={loading}
-              style={{ borderRadius: 8, fontWeight: 500, background: "var(--brand)", borderColor: "var(--brand)", height: 44 }}
-            >
-              {loading ? t("authRegisterSubmitting") : t("authRegisterSubmit")}
-            </Button>
-          </Form.Item>
-        </Form>
-      )}
-
-      {mode === "employee" && employeeStep === "tabel" && (
+      {/* ШАГ 1: Табельный номер */}
+      {employeeStep === "tabel" && (
         <Form form={tabelForm} layout="vertical" onFinish={submitTabel} requiredMark={false} size="large">
           <Form.Item
             name="tabel"
@@ -301,7 +234,8 @@ export default function RegisterPage() {
         </Form>
       )}
 
-      {mode === "employee" && employeeStep === "identity" && lookupResult && (
+      {/* ШАГ 2: Подтверждение личности и Дата рождения */}
+      {employeeStep === "identity" && lookupResult && (
         <Space direction="vertical" size="middle" style={{ width: "100%" }}>
           <Descriptions bordered column={1} size="small">
             <Descriptions.Item label={t("authEmployeeConfirmOtdel")}>{lookupResult.otdel}</Descriptions.Item>
@@ -330,8 +264,13 @@ export default function RegisterPage() {
               rules={[
                 { required: true, message: t("authEmployeeBirthDateRequired") },
                 {
-                  pattern: /^\d{2}\.\d{2}\.\d{4}$/,
-                  message: t("authEmployeeBirthDateFormatError"),
+                  validator(_, value) {
+                    if (!value) return Promise.resolve();
+                    if (!parseBirthDate(value)) {
+                      return Promise.reject(new Error(t("authEmployeeBirthDateFormatError")));
+                    }
+                    return Promise.resolve();
+                  },
                 },
               ]}
             >
@@ -340,6 +279,11 @@ export default function RegisterPage() {
                 placeholder="ДД.ММ.ГГГГ"
                 disabled={loading}
                 autoComplete="off"
+                maxLength={10}
+                onChange={(e) => {
+                  const formatted = formatBirthDateInput(e.target.value);
+                  identityForm.setFieldsValue({ birthDate: formatted });
+                }}
               />
             </Form.Item>
 
@@ -363,7 +307,8 @@ export default function RegisterPage() {
         </Space>
       )}
 
-      {mode === "employee" && employeeStep === "credentials" && (
+      {/* ШАГ 3: Учетные данные (Логин, Email, Пароль) */}
+      {employeeStep === "credentials" && (
         <Form form={credentialsForm} layout="vertical" onFinish={submitCredentials} requiredMark={false} size="large">
           <Form.Item name="login" label={t("authLoginFieldLogin")} rules={[{ required: true, message: t("authLoginFieldLoginRequired") }]}>
             <Input
@@ -374,7 +319,7 @@ export default function RegisterPage() {
             />
           </Form.Item>
 
-          <Form.Item
+          {/* <Form.Item
             name="mail"
             label={t("authRegisterFieldEmail")}
             rules={[
@@ -388,7 +333,7 @@ export default function RegisterPage() {
               disabled={loading}
               autoComplete="email"
             />
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item
             name="password"

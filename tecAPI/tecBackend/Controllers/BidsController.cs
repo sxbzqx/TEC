@@ -136,7 +136,7 @@ public class BidsController : ControllerBase
     /// Детали одной заявки — доступна только сотруднику отдела ОКиТ.
     /// </summary>
     [HttpGet("{id:int}")]
-    [Authorize(Roles = "Admin,SuperAdmin")]
+    [Authorize(Roles = "SuperAdmin,Admin,Worker")]
     public async Task<ActionResult<DocumentIncomingDto>> GetDocumentById(int id)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;

@@ -227,10 +227,6 @@ public class AuthController : ControllerBase
             return Conflict(new { message = "Для этого табельного номера уже создан аккаунт" });
         }
 
-        // Проверка личности: сотрудник должен сам знать своё ФИО и дату рождения
-        // как в кадровой базе — иначе кто угодно, подобрав табельный номер,
-        // мог бы зарегистрироваться от чужого имени. Один и тот же текст
-        // ошибки для обоих полей, чтобы не подсказывать, какое из них неверно.
         if (!FioMatches(request.Fio, worker.Fio) || request.BirthDate.Date != worker.Dr.Date)
         {
             return BadRequest(new { message = "ФИО или дата рождения не совпадают с данными в системе" });
@@ -242,24 +238,12 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "Пользователь с таким логином уже существует" });
         }
 
-        // worker.OtdelId — числовой код, который не соответствует ни otdel.Id,
-        // ни otdel.IdOtd (сверено на реальных данных: например, у "Котельный
-        // цех" otdelID=59, а в otdel этот же цех имеет id=11/id_otd=13 —
-        // числа из разных систем координат). Надёжно совпадает только текст:
-        // worker.Otdel ("отдел рус.полностью") дословно равен otdel.NameOtd.
-        // Регистронезависимо: у ОКиТ, например, otdel.name_otd = "ОКИТ",
-        // а worker.otdelruss = "ОКиТ" — расходятся только регистром "и"/"И".
+
         var fullNameLower = worker.Otdel.Trim().ToLower();
         var otdel = await _context.Otdels.FirstOrDefaultAsync(
             o => o.NameOtd.Trim().ToLower() == fullNameLower
         );
 
-        // otdel.NameOtd ограничен 20 символами — для отделов с длинным
-        // полным названием (например, ОКиТ) там хранится не worker.Otdel
-        // (полное), а краткое имя — worker.OtdelRusS ("отдел рус.кратко").
-        // Без этого фолбэка otdel остаётся null, OtdelId у сотрудника
-        // никогда не проставляется, и заявки в такой отдел не попадают
-        // во "Входящие" (GetIncoming отдаёт пустой список при user.Otdel == null).
         if (otdel == null && !string.IsNullOrWhiteSpace(worker.OtdelRusS))
         {
             var shortNameLower = worker.OtdelRusS.Trim().ToLower();

@@ -43,9 +43,9 @@ export default function HomePage() {
         </div>
 
         <div className={styles.heroContent}>
-          <Tag icon={<ThunderboltOutlined />} className={styles.heroBadge}>
+          {/* <Tag icon={<ThunderboltOutlined />} className={styles.heroBadge}>
             {t("landHeroBadge")}
-          </Tag>
+          </Tag> */}
 
           <Title className={styles.heroTitle}>
             {t("landHeroWelcome")}&nbsp;
@@ -74,7 +74,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className={styles.heroStats}>
+          {/* <div className={styles.heroStats}>
             <div className={styles.heroStatItem}>
               <span className={styles.heroStatVal}>1700+</span>
               <span className={styles.heroStatLbl}>{t("landStatWorkers")}</span>
@@ -96,7 +96,7 @@ export default function HomePage() {
               <span className={styles.heroStatVal}>24/7</span>
               <span className={styles.heroStatLbl}>{t("landStatUptime")}</span>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
 
