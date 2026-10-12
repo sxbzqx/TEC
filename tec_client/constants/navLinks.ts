@@ -82,7 +82,7 @@ export const NAV_LINKS = [
     roles: ["SuperAdmin", "Admin", "Worker"],
     children: [
       {
-        key: "/tech",
+        key: "/tech/computers",
         label: "Компьютеры",
         labelKg: "Компьютерлер",
         roles: ["SuperAdmin", "Admin", "Worker"]
