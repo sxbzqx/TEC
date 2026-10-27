@@ -8,6 +8,6 @@ export const ROUTE_PERMISSIONS: Record<string, string[]> = {
   "/archive": ["SuperAdmin", "Admin", "Worker"],
   "/profile": ["SuperAdmin", "Admin", "Worker", "User"],
   "/bids/create": ["Admin", "SuperAdmin", "Worker"],
-  "/bids/incoming": ["SuperAdmin", "Admin", "Worker"],
+  "/bids/incoming": ["SuperAdmin", "Admin"],
   "/create": ["Worker", "Guest", "SuperAdmin", "Admin"],
 };

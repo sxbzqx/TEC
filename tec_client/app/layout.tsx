@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { Golos_Text } from "next/font/google";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import Providers from "./providers";
 import Sidebar from "@/components/navbar/Sidebar";
@@ -11,13 +10,6 @@ import { AuthProvider } from "@/context/AuthContext";
 import { decodeAccessToken } from "@/utils/jwt";
 import "./globals.css";
 // import ContextMenuWrapper from "@/components/contextMenu/contextMenuWrapper";кастом пкм
-
-const golosText = Golos_Text({
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-golos",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   icons: { icon: "/factory-32.png" },
@@ -47,7 +39,6 @@ export default async function RootLayout({
     <html
       lang={initialLocale === "kg" ? "ky" : "ru"}
       data-theme={initialTheme}
-      className={golosText.variable}
     >
       <body>
         <AntdRegistry>

@@ -1,76 +1,84 @@
-using System.Text;
-using System.Xml.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using tecBackend.Models;
 
 namespace tecBackend.Services;
 
-public class OfficeEquipmentService(HttpClient http, IMemoryCache cache, IConfiguration configuration)
+public class OfficeEquipmentService(SiteContext db, IMemoryCache cache)
 {
-    private const int MaxPages = 20;
-
-    static OfficeEquipmentService() =>
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-    public Task<List<OfficeComputerDto>> GetByTypeAsync(int nout, CancellationToken ct)
+    public async Task<List<OfficeEquipment>> GetByTypeAsync(string type, CancellationToken ct)
     {
-        string cacheKey = $"office-equipment-{nout}";
+        string cacheKey = $"office-equipment-db-{type}";
 
-        return cache.GetOrCreateAsync(cacheKey, async e =>
+        return await cache.GetOrCreateAsync(cacheKey, async e =>
         {
             e.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
-            var all = new List<OfficeComputerDto>();
 
-            var encoding = CodePagesEncodingProvider.Instance.GetEncoding("windows-1251") ?? Encoding.UTF8;
-            var sessionId = configuration["TEC_SESSION_ID"];
-            
-            // Динамический URL в зависимости от nout (0 - ПК, 1 - Ноутбуки)
-            var baseUrl = $"http://10.0.70.30:8080/documentooborot/select_comp.php?nout={nout}&page=";
-
-            for (var page = 1; page <= MaxPages; page++)
-            {
-                var request = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}{page}");
-
-                if (!string.IsNullOrEmpty(sessionId))
-                {
-                    request.Headers.Add("Cookie", $"PHPSESSID={sessionId}");
-                }
-                request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
-                request.Headers.Add("Referer", "http://10.0.70.30:8080/");
-
-                var response = await http.SendAsync(request, ct);
-
-                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    break;
-                }
-
-                response.EnsureSuccessStatusCode();
-
-                var responseBytes = await response.Content.ReadAsByteArrayAsync(ct);
-                var xmlContent = encoding.GetString(responseBytes);
-
-                using var reader = new StringReader(xmlContent);
-                var doc = await XDocument.LoadAsync(reader, LoadOptions.None, ct);
-
-                var items = doc.Root?.Elements("comp").Select(Map).ToList() ?? [];
-                if (items.Count == 0) break;
-
-                all.AddRange(items);
-            }
-            return all;
-        })!;
+            return await db.OfficeEquipments
+                .AsNoTracking()
+                .Where(x => x.Type == type)
+                .ToListAsync(ct);
+        }) ?? [];
     }
 
-    private static OfficeComputerDto Map(XElement c)
+    public async Task<OfficeEquipment?> GetByIdAsync(int id, CancellationToken ct)
     {
-        string V(string n) => ((string?)c.Element(n))?.Trim() ?? "";
-        return new(
-            int.TryParse(V("id_c"), out var id) ? id : 0,
-            V("inv_num"), V("name_c"), V("phone"), V("name_obj"),
-            V("id_otd"), V("user_dep"), V("user_fio"),
-            V("cpu"), V("ram_1"), V("ram_2"), V("hdd_1"), V("hdd_2"),
-            V("optical_1"), V("video"), V("audio"), V("speakers"), V("monitor"),
-            V("input_month"), V("input_year"));
+        return await db.OfficeEquipments.FirstOrDefaultAsync(x => x.Id == id, ct);
+    }
+
+    public async Task<OfficeEquipment> CreateAsync(OfficeEquipment entity, CancellationToken ct)
+    {
+        db.OfficeEquipments.Add(entity);
+        await db.SaveChangesAsync(ct);
+        cache.Remove($"office-equipment-db-{entity.Type}");
+        return entity;
+    }
+
+    public async Task<OfficeEquipment?> UpdateAsync(int id, OfficeEquipment dto, CancellationToken ct)
+    {
+        var existing = await db.OfficeEquipments.FirstOrDefaultAsync(x => x.Id == id, ct);
+        if (existing == null) return null;
+
+        existing.InvNum = dto.InvNum;
+        existing.Name = dto.Name;
+        existing.NetworkName = dto.NetworkName;
+        existing.Phone = dto.Phone;
+        existing.Department = dto.Department;
+        existing.UserDep = dto.UserDep;
+        existing.UserFio = dto.UserFio;
+        existing.Cpu = dto.Cpu;
+        existing.Ram1 = dto.Ram1;
+        existing.Ram2 = dto.Ram2;
+        existing.Hdd1 = dto.Hdd1;
+        existing.Hdd2 = dto.Hdd2;
+        existing.Video = dto.Video;
+        existing.Monitor = dto.Monitor;
+        existing.Optical = dto.Optical;
+        existing.Audio = dto.Audio;
+        existing.Speakers = dto.Speakers;
+        existing.SerialNumber = dto.SerialNumber;
+        existing.TypeCartr = dto.TypeCartr;
+        existing.NumZapr = dto.NumZapr;
+        existing.TypeSelen = dto.TypeSelen;
+        existing.ReplaceSelen = dto.ReplaceSelen;
+        existing.TypeToner = dto.TypeToner;
+        existing.KolToner = dto.KolToner;
+        existing.InputMonth = dto.InputMonth;
+        existing.InputYear = dto.InputYear;
+
+        await db.SaveChangesAsync(ct);
+        cache.Remove($"office-equipment-db-{existing.Type}");
+        return existing;
+    }
+
+    public async Task<bool> DeleteAsync(int id, CancellationToken ct)
+    {
+        var entity = await db.OfficeEquipments.FirstOrDefaultAsync(x => x.Id == id, ct);
+        if (entity == null) return false;
+
+        db.OfficeEquipments.Remove(entity);
+        await db.SaveChangesAsync(ct);
+        cache.Remove($"office-equipment-db-{entity.Type}");
+        return true;
     }
 }

@@ -79,31 +79,31 @@ export const NAV_LINKS = [
     key: "tech-sub",
     label: "Офисная техника",
     labelKg: "Офистик техника",
-    roles: ["SuperAdmin", "Admin", "Worker"],
+    roles: ["SuperAdmin", "Admin"],
     children: [
       {
         key: "/tech/computers",
         label: "Компьютеры",
         labelKg: "Компьютерлер",
-        roles: ["SuperAdmin", "Admin", "Worker"]
+        roles: ["SuperAdmin", "Admin"]
       },
       {
         key: "/tech/laptops",
         label: "Ноутбуки",
         labelKg: "Ноутбуктар",
-        roles: ["SuperAdmin", "Admin", "Worker"]
+        roles: ["SuperAdmin", "Admin"]
       },
       {
         key: "/tech/printers",
         label: "Принтеры",
         labelKg: "Принтерлер",
-        roles: ["SuperAdmin", "Admin", "Worker"]
+        roles: ["SuperAdmin", "Admin"]
       },
       {
         key: "/tech/others",
         label: "Прочее оборудование",
         labelKg: "Башка жабдуулар",
-        roles: ["SuperAdmin", "Admin", "Worker"]
+        roles: ["SuperAdmin", "Admin"]
       },
     ],
   },
@@ -123,7 +123,7 @@ export const NAV_LINKS = [
         key: "/bids/incoming", 
         label: "Входящие Заявки",
         labelKg: "Келген өтүнмөлөр",
-        roles: ["Admin", "SuperAdmin", "Worker"]
+        roles: ["Admin", "SuperAdmin"]
       },
     ],
   },

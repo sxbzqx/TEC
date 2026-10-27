@@ -34,6 +34,8 @@ public partial class SiteContext : DbContext
 
     public virtual DbSet<UserSession> UserSessions { get; set; }
 
+    public DbSet<OfficeEquipment> OfficeEquipments => Set<OfficeEquipment>();
+
     public virtual DbSet<Worker> Workers { get; set; }
 
     public virtual DbSet<Workers18062024> Workers18062024s { get; set; }
@@ -211,6 +213,12 @@ public partial class SiteContext : DbContext
             entity.Property(e => e.Question).HasColumnType("text").HasColumnName("question");
             entity.Property(e => e.Tabel).HasMaxLength(5).HasColumnName("tabel");
         });
+
+        modelBuilder.Entity<OfficeEquipment>()
+            .HasIndex(e => e.Type);
+        
+        modelBuilder.Entity<OfficeEquipment>()
+            .HasIndex(e => e.InvNum);
 
         modelBuilder.Entity<Worker>(entity =>
         {

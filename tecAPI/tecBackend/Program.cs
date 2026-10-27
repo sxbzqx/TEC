@@ -70,7 +70,8 @@ builder
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<SiteContext>(options =>
-    options.UseNpgsql(connectionString!));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -155,6 +156,10 @@ builder
         };
     });
 
+
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<OfficeEquipmentService>();
+
 builder.Services.AddAuthorization();
 
 // 7. Rate limiting на аутентификационных эндпоинтах — защита от брутфорса
@@ -172,12 +177,6 @@ builder.Services.AddRateLimiter(options =>
             opt.QueueLimit = 0;
         }
     );
-});
-
-builder.Services.AddMemoryCache();
-builder.Services.AddHttpClient<OfficeEquipmentService>(client => 
-{
-    client.Timeout = TimeSpan.FromSeconds(15);
 });
 
 

@@ -101,7 +101,7 @@ export default function WorkersList() {
       key: "otdel",
       render: (text: string) => text?.trim(),
     },
-    { title: t("colCategory"), dataIndex: "kategoriyaName", key: "kategoriyaName" },
+    // { title: t("colCategory"), dataIndex: "kategoriyaName", key: "kategoriyaName" },
     {
       title: t("colPhone"),
       dataIndex: "phone",
@@ -223,7 +223,7 @@ export default function WorkersList() {
             </div>
           </Space>
 
-          <Button
+          {/* <Button
             type="primary"
             icon={<PrinterOutlined />}
             onClick={() => window.print()}
@@ -236,7 +236,7 @@ export default function WorkersList() {
             size="large"
           >
             {t("workersPrint")}
-          </Button>
+          </Button> */}
         </Space>
       </Card>
 
