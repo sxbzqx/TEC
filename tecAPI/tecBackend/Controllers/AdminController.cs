@@ -84,13 +84,34 @@ public class AdminController : ControllerBase
         );
     }
 
-    [AllowAnonymous]
+    private bool IsAdmin => User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
+
+    // Общая проекция новости: Category отдаётся плоским объектом (без циклов).
+    private static readonly System.Linq.Expressions.Expression<Func<Post, object>> PostProjection =
+        p => new
+        {
+            p.Id,
+            p.Title,
+            p.Content,
+            p.Summary,
+            p.CreatedAt,
+            p.UpdatedAt,
+            p.CreatorName,
+            p.CreatorDepartment,
+            p.CategoryId,
+            Category = new { p.Category.Id, p.Category.Name },
+            p.IsPublished,
+            p.ShowOnMain,
+            p.Priority,
+        };
+
+    /// <summary>Все новости, включая черновики — только для админов (класс под [Authorize]).</summary>
     [HttpGet("posts")]
     public async Task<IActionResult> GetAllPosts()
     {
         var posts = await _context
-            .Posts.Include(p => p.Category)
-            .OrderByDescending(p => p.CreatedAt)
+            .Posts.OrderByDescending(p => p.CreatedAt)
+            .Select(PostProjection)
             .ToListAsync();
 
         return Ok(posts);
@@ -100,9 +121,13 @@ public class AdminController : ControllerBase
     [HttpGet("posts/{id}")]
     public async Task<IActionResult> GetPostById(int id)
     {
+        // Черновики видят только администраторы.
+        var isAdmin = IsAdmin;
+
         var post = await _context
-            .Posts.Include(p => p.Category)
-            .FirstOrDefaultAsync(p => p.Id == id);
+            .Posts.Where(p => p.Id == id && (p.IsPublished || isAdmin))
+            .Select(PostProjection)
+            .FirstOrDefaultAsync();
 
         if (post == null)
             return NotFound(new { message = "Пост не найден" });
@@ -110,20 +135,33 @@ public class AdminController : ControllerBase
         return Ok(post);
     }
 
+    /// <summary>Публичная лента: только опубликованные, сначала по дате.</summary>
     [AllowAnonymous]
     [HttpGet("posts/public")]
     public async Task<IActionResult> GetPublicPosts()
     {
         var posts = await _context
-            .Posts.OrderByDescending(p => p.CreatedAt)
-            .Select(p => new
-            {
-                p.Id,
-                p.CreatorName,
-                p.Title,
-                p.Content,
-                p.CreatedAt,
-            })
+            .Posts.Where(p => p.IsPublished)
+            .OrderByDescending(p => p.CreatedAt)
+            .Select(PostProjection)
+            .ToListAsync();
+
+        return Ok(posts);
+    }
+
+    /// <summary>Новости для главной: опубликованные + «показать на главной», по приоритету, затем по дате.</summary>
+    [AllowAnonymous]
+    [HttpGet("posts/featured")]
+    public async Task<IActionResult> GetFeaturedPosts([FromQuery] int take = 5)
+    {
+        take = Math.Clamp(take, 1, 12);
+
+        var posts = await _context
+            .Posts.Where(p => p.IsPublished && p.ShowOnMain)
+            .OrderByDescending(p => p.Priority)
+            .ThenByDescending(p => p.CreatedAt)
+            .Take(take)
+            .Select(PostProjection)
             .ToListAsync();
 
         return Ok(posts);
@@ -149,9 +187,13 @@ public class AdminController : ControllerBase
 
         var post = new Post
         {
-            Title = request.Title,
+            Title = request.Title.Trim(),
             Content = request.Content,
+            Summary = string.IsNullOrWhiteSpace(request.Summary) ? null : request.Summary.Trim(),
             CategoryId = request.CategoryId, // Присваиваем ID категории
+            IsPublished = request.IsPublished,
+            ShowOnMain = request.ShowOnMain,
+            Priority = request.Priority,
             CreatedAt = BishkekClock.Now,
             CreatedByUserId = userId,
             CreatorName = creatorInfo.Name,
@@ -160,7 +202,12 @@ public class AdminController : ControllerBase
 
         _context.Posts.Add(post);
 
-        _activityLog.Log("post_created", "Опубликована новость", post.Title, userId);
+        _activityLog.Log(
+            "post_created",
+            request.IsPublished ? "Опубликована новость" : "Создан черновик новости",
+            post.Title,
+            userId
+        );
 
         await _context.SaveChangesAsync();
 
@@ -174,14 +221,42 @@ public class AdminController : ControllerBase
         if (post == null)
             return NotFound(new { message = "Пост не найден" });
 
-        post.Title = request.Title;
+        post.Title = request.Title?.Trim();
         post.Content = request.Content;
+        post.Summary = string.IsNullOrWhiteSpace(request.Summary) ? null : request.Summary.Trim();
         post.CategoryId = request.CategoryId;
+        post.IsPublished = request.IsPublished;
+        post.ShowOnMain = request.ShowOnMain;
+        post.Priority = request.Priority;
+        post.UpdatedAt = BishkekClock.Now;
 
         _activityLog.Log("post_updated", "Новость обновлена", post.Title, GetCurrentUserId());
 
         await _context.SaveChangesAsync();
         return Ok(new { message = "Пост успешно обновлен" });
+    }
+
+    /// <summary>Быстрое переключение «опубликовано / на главной / приоритет» из таблицы.</summary>
+    [HttpPatch("posts/{id}/flags")]
+    public async Task<IActionResult> UpdatePostFlags(int id, [FromBody] PostFlagsRequest request)
+    {
+        var post = await _context.Posts.FindAsync(id);
+        if (post == null)
+            return NotFound(new { message = "Пост не найден" });
+
+        if (request.IsPublished.HasValue)
+            post.IsPublished = request.IsPublished.Value;
+        if (request.ShowOnMain.HasValue)
+            post.ShowOnMain = request.ShowOnMain.Value;
+        if (request.Priority.HasValue)
+            post.Priority = request.Priority.Value;
+
+        post.UpdatedAt = BishkekClock.Now;
+
+        _activityLog.Log("post_updated", "Параметры новости изменены", post.Title, GetCurrentUserId());
+
+        await _context.SaveChangesAsync();
+        return Ok(new { message = "Параметры обновлены" });
     }
 
     [HttpDelete("posts/{id}")]

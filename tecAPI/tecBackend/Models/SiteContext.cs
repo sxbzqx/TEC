@@ -143,6 +143,11 @@ public partial class SiteContext : DbContext
             entity.Property(e => e.CreatorName).HasColumnName("creatorname");
             entity.Property(e => e.CreatorDepartment).HasColumnName("creatordepartment");
             entity.Property(e => e.CategoryId).HasColumnName("categoryid");
+            entity.Property(e => e.Summary).HasColumnName("summary");
+            entity.Property(e => e.IsPublished).HasColumnName("ispublished").HasDefaultValue(true);
+            entity.Property(e => e.ShowOnMain).HasColumnName("showonmain").HasDefaultValue(false);
+            entity.Property(e => e.Priority).HasColumnName("priority").HasDefaultValue(0);
+            entity.Property(e => e.UpdatedAt).HasColumnName("updatedat");
         });
 
         modelBuilder.Entity<Category>(entity =>
