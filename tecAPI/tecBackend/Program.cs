@@ -1,219 +1,39 @@
-using System.Reflection;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.RateLimiting;
 using DotNetEnv;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using tecBackend.Models;
-using tecBackend.Services;
+using tecBackend.Extensions;
+using tecBackend.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 0. Загрузка env
 Env.Load();
 builder.Configuration.AddEnvironmentVariables();
 
-var jwtSecret =
-    builder.Configuration["AppSettings:Token"]
-    ?? throw new InvalidOperationException("Ключа JWT нет в конфигурации");
-
-var jwtIssuer = builder.Configuration["AppSettings:Issuer"] ?? "tec-api";
-var jwtAudience = builder.Configuration["AppSettings:Audience"] ?? "tec-client";
-
-var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
-
-// 1. Настройка CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(
-        "AllowNextJS",
-        policy =>
-        {
-            policy
-                .WithOrigins(
-                    "http://localhost:3000",
-                    "https://localhost:3000",
-                    "http://btec.kg",
-                    "https://btec.kg"
-                )
-                .SetIsOriginAllowed(origin =>
-                {
-                    if (string.IsNullOrEmpty(origin)) return false;
-
-                    var uri = new Uri(origin);
-                    return uri.Host.StartsWith("10.0.4.") || uri.Host == "localhost" || uri.Host == "btec.kg";
-                })
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-        }
-    );
-});
-
-// 2. Настройка контроллеров и JSON
-builder
-    .Services.AddControllers()
-    .AddJsonOptions(x =>
-        x.JsonSerializerOptions.ReferenceHandler = System
-            .Text
-            .Json
-            .Serialization
-            .ReferenceHandler
-            .IgnoreCycles
-    );
-
-
-// 3. Подключение к БД (PostgreSQL)
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-builder.Services.AddDbContext<SiteContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
-           .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
-
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
-// 4. Настройка Swagger
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
-    if (File.Exists(xmlPath))
-    {
-        options.IncludeXmlComments(xmlPath);
-    }
-
-    options.SwaggerDoc(
-        "v1",
-        new Microsoft.OpenApi.Models.OpenApiInfo
-        {
-            Title = "ТЭЦ API",
-            Version = "v1",
-            Description = "Документация API для корпоративного портала ТЭЦ",
-        }
-    );
-
-    options.AddSecurityDefinition(
-        "Bearer",
-        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-        {
-            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-            Description = "Введите токен в формате: Bearer {ваш_токен}",
-            Name = "Authorization",
-            Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-            BearerFormat = "JWT",
-            Scheme = "Bearer",
-        }
-    );
-
-    options.AddSecurityRequirement(
-        new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-        {
-            {
-                new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-                {
-                    Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                    {
-                        Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                        Id = "Bearer",
-                    },
-                },
-                Array.Empty<string>()
-            },
-        }
-    );
-});
-
-// 5. Сервисы
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
-builder.Services.AddScoped<IActivityLogService, ActivityLogService>();
-
-// 6. Аутентификация и авторизация
-builder
-    .Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = key,
-            ValidateIssuer = true,
-            ValidIssuer = jwtIssuer,
-            ValidateAudience = true,
-            ValidAudience = jwtAudience,
-            ValidateLifetime = true,
-            NameClaimType = ClaimTypes.Name,
-            RoleClaimType = ClaimTypes.Role,
-        };
-    });
-
-
-builder.Services.AddMemoryCache();
-builder.Services.AddScoped<OfficeEquipmentService>();
-
-builder.Services.AddAuthorization();
-
-// 7. Rate limiting на аутентификационных эндпоинтах — защита от брутфорса
-//    паролей и перебора табельных номеров.
-builder.Services.AddRateLimiter(options =>
-{
-    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-
-    options.AddFixedWindowLimiter(
-        "auth",
-        opt =>
-        {
-            opt.PermitLimit = 10;
-            opt.Window = TimeSpan.FromMinutes(1);
-            opt.QueueLimit = 0;
-        }
-    );
-});
-
+builder.Services
+    .AddAppForwardedHeaders(builder.Configuration)
+    .AddAppCors()
+    .AddAppControllers()
+    .AddAppDatabase(builder.Configuration)
+    .AddAppSwagger()
+    .AddAppServices()
+    .AddAppJwtAuth(builder.Configuration)
+    .AddAppRateLimiting();
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// Swagger — только в Development. В проде схема API не должна быть публичной.
 if (app.Environment.IsDevelopment())
 {
-    // 1. Указываем Swagger генерировать JSON с префиксом /api/
-    app.UseSwagger(c =>
-    {
-        c.RouteTemplate = "api/swagger/{documentName}/swagger.json";
-    });
-
-    // 2. Настраиваем UI
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("v1/swagger.json", "ТЭЦ API v1");
-        c.RoutePrefix = "api/swagger";
-    });
+    app.UseAppSwagger();
 }
 
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<SiteContext>();
-    await dbContext.Database.MigrateAsync();
-}
+await app.ApplyMigrationsAsync();
 
 app.UseRouting();
-
-app.UseCors("AllowNextJS");
-
+app.UseCors(CorsExtensions.PolicyName);
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseRateLimiter();
-
 app.MapControllers();
 
 app.Run();

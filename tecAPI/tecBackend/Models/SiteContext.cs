@@ -17,7 +17,7 @@ public partial class SiteContext : DbContext
 
 
     public virtual DbSet<ActivityLog> ActivityLogs { get; set; }
-    
+
     public virtual DbSet<Department> Departments { get; set; }
 
     public virtual DbSet<Document> Documents { get; set; }
@@ -29,7 +29,7 @@ public partial class SiteContext : DbContext
     public virtual DbSet<Category> Categories { get; set; }
 
     public virtual DbSet<Resource> Resources { get; set; }
-   
+
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserSession> UserSessions { get; set; }
@@ -221,7 +221,7 @@ public partial class SiteContext : DbContext
 
         modelBuilder.Entity<OfficeEquipment>()
             .HasIndex(e => e.Type);
-        
+
         modelBuilder.Entity<OfficeEquipment>()
             .HasIndex(e => e.InvNum);
 
@@ -437,6 +437,9 @@ public partial class SiteContext : DbContext
                 .HasColumnName("actor_user_id");
             entity.Property(e => e.CreatedAt).HasColumnType("timestamp").HasColumnName("created_at");
         });
+
+        modelBuilder.Entity<User>().HasIndex(u => u.Login).IsUnique();
+        modelBuilder.Entity<User>().HasIndex(u => u.Tabel).IsUnique();
 
         OnModelCreatingPartial(modelBuilder);
     }
