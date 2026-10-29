@@ -10,7 +10,6 @@ public static class DatabaseExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Переключатель должен быть выставлен до первого использования Npgsql
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
         services.AddDbContext<SiteContext>(options =>

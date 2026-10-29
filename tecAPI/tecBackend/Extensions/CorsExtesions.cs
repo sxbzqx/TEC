@@ -18,7 +18,6 @@ public static class CorsExtensions
 
     private static bool IsAllowedOrigin(string origin)
     {
-        // TryCreate вместо new Uri: кривой Origin не должен бросать исключение
         if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri))
             return false;
 
