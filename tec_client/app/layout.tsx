@@ -7,6 +7,7 @@ import FooterWrapper from "@/components/navbar/Footer";
 import { App, Layout } from "antd";
 import { Content } from "antd/es/layout/layout";
 import { AuthProvider } from "@/context/AuthContext";
+import { RealtimeProvider } from "@/context/RealtimeContext";
 import { decodeAccessToken } from "@/utils/jwt";
 import "./globals.css";
 // import ContextMenuWrapper from "@/components/contextMenu/contextMenuWrapper";кастом пкм
@@ -45,15 +46,17 @@ export default async function RootLayout({
           <Providers initialTheme={initialTheme} initialLocale={initialLocale}>
             <AuthProvider initialAuth={initialAuth}>
               <App>
-                {/* <ContextMenuWrapper>  кастом контекст меню (ПКМ) */}
-                  <Layout hasSider style={{ minHeight: "100vh" }}>
-                    <Sidebar />
-                    <Layout style={{ minWidth: 0 }}>
-                      <Content style={{ padding: 0 }}>{children}</Content>
-                      <FooterWrapper />
+                <RealtimeProvider>
+                  {/* <ContextMenuWrapper>  кастом контекст меню (ПКМ) */}
+                    <Layout hasSider style={{ minHeight: "100vh" }}>
+                      <Sidebar />
+                      <Layout style={{ minWidth: 0 }}>
+                        <Content style={{ padding: 0 }}>{children}</Content>
+                        <FooterWrapper />
+                      </Layout>
                     </Layout>
-                  </Layout>
-                {/* </ContextMenuWrapper> */}
+                  {/* </ContextMenuWrapper> */}
+                </RealtimeProvider>
               </App>
             </AuthProvider>
           </Providers>

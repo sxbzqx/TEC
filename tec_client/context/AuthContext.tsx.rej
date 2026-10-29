@@ -1,0 +1,31 @@
+diff a/tec_client/context/AuthContext.tsx b/tec_client/context/AuthContext.tsx	(rejected hunks)
+@@ -13,7 +13,8 @@ interface AuthContextType {
+   auth: AuthState;
+   isMounted: boolean;
+   isLoading: boolean;
+-  refreshAuth: () => Promise<void>;
++  /** silent = не переключать isLoading (для фоновых обновлений по realtime). */
++  refreshAuth: (silent?: boolean) => Promise<void>;
+ }
+ 
+ const AuthContext = createContext<AuthContextType | undefined>(undefined);
+@@ -26,8 +27,8 @@ export const AuthProvider: React.FC<{
+   const [isMounted, setIsMounted] = useState(false);
+   const [isLoading, setIsLoading] = useState(true);
+ 
+-  const refreshAuth = useCallback(async () => {
+-    setIsLoading(true);
++  const refreshAuth = useCallback(async (silent = false) => {
++    if (!silent) setIsLoading(true);
+     try {
+       if (Cookies.get("accessToken")) {
+         const userData = await authService.getCurrentUser();
+@@ -39,7 +40,7 @@ export const AuthProvider: React.FC<{
+       console.error("[AuthContext] Ошибка загрузки пользователя:", error);
+       setAuth({ role: "Guest", loginName: "" });
+     } finally {
+-      setIsLoading(false); // Обязательно снимаем флаг загрузки
++      if (!silent) setIsLoading(false); // Обязательно снимаем флаг загрузки
+     }
+   }, []);
+ 

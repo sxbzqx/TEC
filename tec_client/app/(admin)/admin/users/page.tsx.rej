@@ -1,0 +1,251 @@
+diff a/tec_client/app/(admin)/admin/users/page.tsx b/tec_client/app/(admin)/admin/users/page.tsx	(rejected hunks)
+@@ -1,120 +1,67 @@
+ "use client";
+ 
+-import React, { useState, useMemo } from "react";
+-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+-import {
+-  Table,
+-  Select,
+-  Typography,
+-  Card,
+-  Alert,
+-  message,
+-  Tag,
+-  Space,
+-  Input,
+-} from "antd";
+-import { SearchOutlined, UserOutlined } from "@ant-design/icons";
+-import { $api } from "@/app/api/api";
+-import { User } from "@/types/user";
+-import { AxiosError } from "axios";
++import React, { useMemo, useState } from "react";
++import { useQuery } from "@tanstack/react-query";
++import { Alert, Badge, Card, Input, Space, Table, Tag, Typography } from "antd";
++import type { ColumnsType } from "antd/es/table";
++import { SearchOutlined } from "@ant-design/icons";
++import UserAdminDrawer from "@/components/admin/UserAdminDrawer";
++import { adminUserKeys, adminUserService } from "@/services/adminUserService";
++import { useRealtime } from "@/context/RealtimeContext";
+ import { useLocale } from "@/context/LocaleContext";
++import { getRoleTagColor } from "@/utils/roles";
++import type { AdminUserRow } from "@/types/adminUser";
+ 
+ const { Title, Text } = Typography;
+ 
+-const fetchUsers = async () => {
+-  const response = await $api.get<User[]>("/admin/users");
+-  return response.data;
+-};
+-
+-const updateUserRole = async ({
+-  userId,
+-  newRole,
+-}: {
+-  userId: string;
+-  newRole: string;
+-}) => {
+-  const response = await $api.put(`/admin/users/${userId}/role`, {
+-    role: newRole,
+-  });
+-  return response.data;
+-};
++const ROLE_FILTERS = ["SuperAdmin", "Admin", "Worker", "User"].map((r) => ({ text: r, value: r }));
+ 
+ export default function AdminUsersPage() {
+   const { t } = useLocale();
+-  const queryClient = useQueryClient();
+-  const [searchQuery, setSearchQuery] = useState<string>("");
++  const { status } = useRealtime();
++  const [searchQuery, setSearchQuery] = useState("");
++  const [selectedId, setSelectedId] = useState<number | null>(null);
+ 
+   const {
+     data: users = [],
+     isLoading,
+     error,
+-  } = useQuery<User[], Error>({
+-    queryKey: ["admin-users"],
+-    queryFn: fetchUsers,
+-  });
+-
+-  const mutation = useMutation({
+-    mutationFn: updateUserRole,
+-    onSuccess: () => {
+-      message.success(t("adminUsersRoleUpdated"));
+-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+-    },
+-    onError: (err: AxiosError<{ message?: string }>) => {
+-      const errorMsg =
+-        err.response?.data?.message || err.message || t("workersLoadErrorFallback");
+-      message.error(`${t("adminUsersRoleUpdateError")} ${errorMsg}`);
+-    },
++  } = useQuery<AdminUserRow[], Error>({
++    queryKey: adminUserKeys.list,
++    queryFn: adminUserService.getAll,
+   });
+ 
+-  const handleRoleChange = (userId: string, newRole: string) => {
+-    mutation.mutate({ userId, newRole });
+-  };
+-
+-  // Оптимизация: мемоизируем отфильтрованный список, чтобы не пересчитывать его при каждом рендере,
+-  // если users или запрос не изменились.
+   const filteredUsers = useMemo(() => {
+-    const lowerQuery = searchQuery.toLowerCase();
+-    return users.filter((user) =>
+-      user.username?.toLowerCase().includes(lowerQuery) ||
+-      user.email?.toLowerCase().includes(lowerQuery)
++    const q = searchQuery.trim().toLowerCase();
++    if (!q) return users;
++    return users.filter((u) =>
++      [u.username, u.email, u.otdel, u.tabel].some((v) => v?.toLowerCase().includes(q)),
+     );
+   }, [users, searchQuery]);
+ 
+-  const getRoleTagColor = (role: string) => {
+-    switch (role) {
+-      case "SuperAdmin":
+-        return "volcano";
+-      case "Admin":
+-        return "gold";
+-      case "Worker":
+-        return "blue";
+-      default:
+-        return "gray";
+-    }
+-  };
+-
+-  const columns = [
++  const columns: ColumnsType<AdminUserRow> = [
+     {
+-      title: t("colLogin"),
+-      dataIndex: "username",
+-      key: "username",
+-      render: (text: string) => (
+-        <Space>
+-          <UserOutlined style={{ color: "var(--brand)" }} />
+-          <Text strong>{text}</Text>
++      title: t("auColUser"),
++      key: "user",
++      sorter: (a, b) => a.username.localeCompare(b.username),
++      render: (_, u) => (
++        <Space align="start">
++          <Badge status={u.isOnline ? "success" : "default"} style={{ marginTop: 6 }} />
++          <div>
++            <Text strong>{u.username}</Text>
++            <Text type="secondary" style={{ display: "block", fontSize: 12 }}>
++              {u.email || "—"}
++            </Text>
++          </div>
+         </Space>
+       ),
+     },
+     {
+-      title: t("colEmail"),
+-      dataIndex: "email",
+-      key: "email",
+-      render: (text: string) => text || "—",
+-    },
+-    {
+-      title: t("colCurrentRole"),
++      title: t("auColRole"),
+       dataIndex: "role",
+       key: "role",
++      filters: ROLE_FILTERS,
++      onFilter: (value, u) => u.role === value,
+       render: (role: string) => (
+         <Tag color={getRoleTagColor(role)} style={{ fontWeight: 500 }}>
+           {role.toUpperCase()}
+@@ -122,20 +69,17 @@ export default function AdminUsersPage() {
+       ),
+     },
+     {
+-      title: t("colRoleAction"),
+-      key: "action",
+-      render: (_: any, record: User) => (
+-        <Select
+-          value={record.role}
+-          style={{ width: 160 }}
+-          onChange={(value) => handleRoleChange(record.id, value)}
+-          disabled={mutation.isPending}
+-        >
+-          <Select.Option value="User">User</Select.Option>
+-          <Select.Option value="Worker">Worker</Select.Option>
+-          <Select.Option value="Admin">Admin</Select.Option>
+-        </Select>
+-      ),
++      title: t("auDepartment"),
++      dataIndex: "otdel",
++      key: "otdel",
++      responsive: ["md"],
++      render: (otdel: string | null) => otdel || "—",
++    },
++    {
++      title: t("auStatus"),
++      key: "status",
++      render: (_, u) =>
++        u.isBanned ? <Tag color="red">{t("auStatusBanned")}</Tag> : <Tag color="green">{t("auStatusActive")}</Tag>,
+     },
+   ];
+ 
+@@ -154,14 +98,19 @@ export default function AdminUsersPage() {
+ 
+   return (
+     <div style={{ padding: "12px" }}>
+-      <Title level={3} style={{ marginBottom: "6px" }}>
+-        {t("adminUsersTitle")}
+-      </Title>
++      <Space align="baseline" style={{ width: "100%", justifyContent: "space-between" }}>
++        <Title level={3} style={{ marginBottom: "6px" }}>
++          {t("adminUsersTitle")}
++        </Title>
++        <Badge
++          status={status === "connected" ? "success" : "warning"}
++          text={<Text type="secondary">Live</Text>}
++        />
++      </Space>
+       <Text type="secondary" style={{ display: "block", marginBottom: "24px" }}>
+         {t("adminUsersSubtitle")}
+       </Text>
+ 
+-      {/* Поиск */}
+       <Card size="small" style={{ marginBottom: "20px", borderRadius: "8px" }}>
+         <div style={{ maxWidth: 400 }}>
+           <Text strong style={{ display: "block", marginBottom: 6 }}>
+@@ -172,26 +121,29 @@ export default function AdminUsersPage() {
+             prefix={<SearchOutlined style={{ color: "var(--ink-faint)" }} />}
+             value={searchQuery}
+             onChange={(e) => setSearchQuery(e.target.value)}
++            allowClear
+           />
+         </div>
+       </Card>
+ 
+-      {/* Таблица пользователей */}
+       <Card
+         variant="borderless"
+-        style={{
+-          boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+-          borderRadius: "12px",
+-        }}
++        style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.05)", borderRadius: "12px" }}
+       >
+-        <Table
++        <Table<AdminUserRow>
+           dataSource={filteredUsers}
+           columns={columns}
+           rowKey="id"
+           loading={isLoading}
+           pagination={{ pageSize: 10, placement: ["bottomCenter"] }}
++          onRow={(u) => ({
++            onClick: () => setSelectedId(u.id),
++            style: { cursor: "pointer" },
++          })}
+         />
+       </Card>
++
++      <UserAdminDrawer userId={selectedId} onClose={() => setSelectedId(null)} />
+     </div>
+   );
+ }

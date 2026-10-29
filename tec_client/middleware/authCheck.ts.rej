@@ -1,0 +1,19 @@
+diff a/tec_client/middleware/authCheck.ts b/tec_client/middleware/authCheck.ts	(rejected hunks)
+@@ -24,7 +24,7 @@ export async function handleAuthAndPermissions(request: NextRequest) {
+     if (!decoded.isExpired && decoded.role) {
+       if (!allowedRoles.includes(decoded.role)) {
+         console.log(`[Middleware] Пользователь ${decoded.role} не имеет доступа к ${pathname}. Редирект на 403`);
+-        return redirectTo(request, "/403");
++        return redirectTo(request, "/forbidden");
+       }
+       return NextResponse.next();
+     }
+@@ -48,7 +48,7 @@ export async function handleAuthAndPermissions(request: NextRequest) {
+ 
+     if (!allowedRoles.includes(refreshedDecoded.role)) {
+       console.log(`[Middleware] Пользователь ${refreshedDecoded.role} не имеет доступа к ${pathname} (после refresh). Редирект на 403`);
+-      return applyTokens(request, redirectTo(request, "/403"), refreshed);
++      return applyTokens(request, redirectTo(request, "/forbidden"), refreshed);
+     }
+ 
+     return applyTokens(request, NextResponse.next({ request }), refreshed);

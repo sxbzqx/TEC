@@ -15,7 +15,8 @@ builder.Services
     .AddAppSwagger()
     .AddAppServices()
     .AddAppJwtAuth(builder.Configuration)
-    .AddAppRateLimiting();
+    .AddAppRateLimiting()
+    .AddAppRealtime();
 
 var app = builder.Build();
 
@@ -35,5 +36,6 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapAppHubs();
 
 app.Run();

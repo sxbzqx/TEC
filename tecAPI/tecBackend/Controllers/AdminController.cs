@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,59 +28,6 @@ public class AdminController : ControllerBase
     {
         var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return int.TryParse(idClaim, out var id) ? id : null;
-    }
-
-    [HttpGet("users")]
-    public async Task<IActionResult> GetAllUsers()
-    {
-        var users = await _context
-            .Users.Select(u => new
-            {
-                u.Id,
-                Username = u.Login,
-                Email = u.Mail,
-                u.Role,
-            })
-            .ToListAsync();
-
-        return Ok(users);
-    }
-
-    [HttpPut("users/{id}/role")]
-    public async Task<IActionResult> UpdateUserRole(int id, [FromBody] UpdateRoleRequest request)
-    {
-        if (request == null || string.IsNullOrEmpty(request.Role))
-        {
-            return BadRequest(new { message = "Роль не указана" });
-        }
-
-        var validRoles = new[] { "SuperAdmin", "Admin", "Worker", "Guest" };
-        if (!validRoles.Contains(request.Role))
-        {
-            return BadRequest(new { message = "Недопустимая роль в системе" });
-        }
-
-        var user = await _context.Users.FindAsync(id);
-        if (user == null)
-        {
-            return NotFound(new { message = "Пользователь не найден" });
-        }
-
-        var oldRole = user.Role;
-        user.Role = request.Role;
-
-        _activityLog.Log(
-            "role_changed",
-            $"Изменена роль пользователя {user.Login}",
-            $"{oldRole ?? "—"} → {request.Role}",
-            GetCurrentUserId()
-        );
-
-        await _context.SaveChangesAsync();
-
-        return Ok(
-            new { message = $"Роль пользователя {user.Login} успешно изменена на {request.Role}" }
-        );
     }
 
     private bool IsAdmin => User.IsInRole("Admin") || User.IsInRole("SuperAdmin");

@@ -22,7 +22,7 @@ export const useDecideBid = () => {
     mutationFn: ({ id, action, comment }: { id: number; action: 1 | 2 | 3; comment?: string }) =>
       bidService.decide(id, action, comment),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bids", "incoming"] });
+      queryClient.invalidateQueries({ queryKey: ["bid", "incoming"] });
       queryClient.invalidateQueries({ queryKey: ["bid", "detail"] });
     },
   });
@@ -33,8 +33,8 @@ export const useCompleteBid = () => {
   return useMutation({
     mutationFn: (id: number) => bidService.complete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bids", "incoming"] });
-      queryClient.invalidateQueries({ queryKey: ["bids", "detail"] });
+      queryClient.invalidateQueries({ queryKey: ["bid", "incoming"] });
+      queryClient.invalidateQueries({ queryKey: ["bid", "detail"] });
     },
   });
 };
