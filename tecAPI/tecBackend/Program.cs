@@ -4,9 +4,15 @@ using tecBackend.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ==========================================
+//         Конфигурация окружения
+// ==========================================
 Env.Load();
 builder.Configuration.AddEnvironmentVariables();
 
+// ==========================================
+//         Регистрация сервисов
+// ==========================================
 builder.Services
     .AddAppForwardedHeaders(builder.Configuration)
     .AddAppCors()
@@ -20,6 +26,9 @@ builder.Services
 
 var app = builder.Build();
 
+// ==========================================
+//        Конфигурация Middleware 
+// ==========================================
 app.UseForwardedHeaders();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -35,6 +44,7 @@ app.UseCors(CorsExtensions.PolicyName);
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 app.MapAppHubs();
 

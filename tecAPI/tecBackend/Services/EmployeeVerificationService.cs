@@ -86,10 +86,6 @@ public class EmployeeVerificationService(SiteContext context) : IEmployeeVerific
         return null;
     }
 
-    /// <summary>
-    /// Без учёта регистра, лишних пробелов и разницы «ё»/«е».
-    /// Без нечёткого совпадения — это проверка личности, а не подсказка.
-    /// </summary>
     private static bool FioMatches(string input, string actual)
     {
         static string Normalize(string s) =>

@@ -49,12 +49,12 @@ public partial class Worker
     public string OtdelRusS { get; set; } = null!;
 
     /// <summary>
-    /// отдел кирг. полностью
+    /// отдел кырг. полностью
     /// </summary>
     public string OtdelKyrB { get; set; } = null!;
 
     /// <summary>
-    /// отдел кирг.кратко
+    /// отдел кырг.кратко
     /// </summary>
     public string OtdelKyrS { get; set; } = null!;
 }

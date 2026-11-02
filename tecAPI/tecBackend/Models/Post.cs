@@ -13,7 +13,6 @@ public class Post
 
     public int CategoryId { get; set;}
 
-    /// <summary>Короткое описание для карточек (необязательно).</summary>
     public string? Summary { get; set; }
 
     /// <summary>false — черновик, виден только администраторам.</summary>

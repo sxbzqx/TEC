@@ -30,10 +30,6 @@ public static class CreatorInfoResolver
         return new CreatorInfo(name, user.Otdel?.NameOtd);
     }
 
-    /// <summary>
-    /// Батч-версия для списков: один запрос на пользователей и один на workers,
-    /// вместо N+1 при обходе каждой записи по отдельности.
-    /// </summary>
     public static async Task<Dictionary<int, CreatorInfo>> ResolveManyAsync(
         SiteContext context,
         IEnumerable<int> userIds
@@ -44,12 +40,6 @@ public static class CreatorInfoResolver
         if (ids.Count == 0)
             return new Dictionary<int, CreatorInfo>();
 
-        // MySql.EntityFrameworkCore не умеет транслировать List<T>.Contains()
-        // в SQL IN(...) для этой версии провайдера ("Expression '@ids'/'@tabels'
-        // in the SQL tree does not have a type mapping assigned") — что для
-        // пустых списков, что для непустых. Забираем всё и фильтруем в памяти:
-        // и Users, и Workers — это справочники (сотрудники завода), не десятки
-        // тысяч строк, так что нагрузка не проблема.
         var allUsers = await context.Users.Include(u => u.Otdel).ToListAsync();
         var users = allUsers.Where(u => ids.Contains(u.Id)).ToList();
 
