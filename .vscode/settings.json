@@ -1,9 +1,21 @@
 {
+    // Скрытие файлов (конфиги, .env, инфрастуктурные и т.д.)
     "files.exclude": {
+        // Infrastructure
         "**/.git": true,
-        "**/manuals": true,
         "**/.dockerignore": true,
         "**/Dockerfile": true,
+        // "**/docker-compose.yml": true,
+        // "**/.gitignore": true, 
+        // "README.md": true,  // 
+        
+        // .env
+        "**/.env": true,
+        
+        // Custom files
+        "**/manuals": true,
+        
+        // Next.js (pnpm)
         "**/eslint.config.mjs": true,
         "**/tsconfig.json": true,
         "**/next.config.ts": true,
@@ -11,28 +23,27 @@
         "**/image-types.d.ts": true,
         "**/pnpm-lock.yaml": true,
         "**/pnpm-workspace.yaml": true,
-        "tec_client/.vscode": true,
-        "tecAPI/.vscode": true,
         "**/.next": true,
+        "**/node_modules": true,
+        "**/public": true,
+        "tec_client/.vscode": true,
         "tec_client/.gitignore": true,
         "tec_client/README.md": true,
+        "tec_client/package.json": true,
+        
+        // .NET  
+        "tecAPI/.vscode": true,
         "tecAPI/tecBackend/.gitignore": true,
         "tecAPI/tecBackend/tecBackend.http": true,
         "tecAPI/tecBackend/README.md": true,
-        "tec_client/package.json": true,
-        "**/.env": true,
-        "tecAPI/tecAPI.sln":true, // mt
-        "tecAPI/README.md": true,   // mt
-        "**/bin": true,
-        "**/obj": true,
+        "tecAPI/tecAPI.sln":true, 
+        "tecAPI/README.md": true,   
         "**/Properties": true,
         "**/appsettings.Development.json": true,
         "**/appsettings.json": true,
         "**/tecBackend.csproj": true,
-        "**/node_modules": true,
-        "**/public": true,
-    
-    
-    
+        "**/bin": true,
+        "**/obj": true,
+        
     }
 }
