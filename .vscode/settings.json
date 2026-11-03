@@ -7,7 +7,10 @@
         "**/Dockerfile": true,
         // "**/docker-compose.yml": true,
         // "**/.gitignore": true, 
-        // "README.md": true,  // 
+        // ".vscode": true,   
+        // "nginx": true,   
+        // "README.md": true,   
+        
         
         // .env
         "**/.env": true,
