@@ -16,7 +16,7 @@
         "**/.env": true,
         
         // Custom files
-        "**/manuals": true,
+        // "**/manuals": true,
         
         // Next.js (pnpm)
         "**/eslint.config.mjs": true,
@@ -29,7 +29,6 @@
         "**/.next": true,
         "**/node_modules": true,
         "**/public": true,
-        "tec_client/.vscode": true,
         "tec_client/.gitignore": true,
         "tec_client/README.md": true,
         "tec_client/package.json": true,
@@ -48,5 +47,8 @@
         "**/bin": true,
         "**/obj": true,
         
-    }
+    },
+    "save-typing.languages": [
+        "*"        
+    ]
 }
