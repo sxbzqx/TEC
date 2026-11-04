@@ -27,8 +27,8 @@ export const NAV_LINKS = [
     children: [
       {
         key: "/admin/users",
-        label: "Управление ролями",
-        labelKg: "Ролдорду башкаруу",
+        label: "Управление пользователями",
+        labelKg: "Колдонуучуларды башкаруу",
         roles: ["SuperAdmin"],
       },
       {

@@ -51,7 +51,7 @@ export const kg: Record<TranslationKey, string> = {
   secBidsDesc: "Берилген өтүнмөлөрдүн тарыхы",
   secDocsTitle: "Документ бланктары",
   secDocsDesc: "Буйруктар, арыздар жана жүктөп алууга типтүү бланктар",
-  secAdminUsersTitle: "Ролдорду башкаруу",
+  secAdminUsersTitle: "Колдонуучуларды башкаруу",
   secAdminUsersDesc: "Кызматкерлерге мүмкүнчүлүк укуктарын дайындоо",
   secAdminNewsTitle: "Жаңылыктарды башкаруу",
   secAdminNewsDesc: "Жаңылыктарды жарыялоо жана түзөтүү",

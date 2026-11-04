@@ -1,13 +1,32 @@
 export const ROUTE_PERMISSIONS: Record<string, string[]> = {
-  "/admin/activity-log": ["SuperAdmin"],
-  "/admin": ["SuperAdmin", "Admin"],
-  "/biznesplan": ["SuperAdmin", "Admin"],
-  "/workers": ["SuperAdmin", "Admin"],
+
+  // Все (User -> не зареганный пользователь)
+  "/news": ["User", "Worker", "Admin", "SuperAdmin"],
+  "/navigation": ["User", "Worker", "Admin", "SuperAdmin"],
+  "/map": ["User", "Worker", "Admin", "SuperAdmin"],
+
+
+
+  // Сотрудники
   "/otdels": ["SuperAdmin", "Admin", "Worker"],
-  "/chat": ["SuperAdmin", "Admin", "Worker"],
-  "/archive": ["SuperAdmin", "Admin", "Worker"],
-  "/profile": ["SuperAdmin", "Admin", "Worker", "User"],
-  "/bids/create": ["Admin", "SuperAdmin", "Worker"],
+  "/profile": ["SuperAdmin", "Admin", "Worker"],
+  "/bids/create": ["SuperAdmin", "Admin", "Worker"],
+  
+  
+  // Администраторы
   "/bids/incoming": ["SuperAdmin", "Admin"],
-  "/create": ["Worker", "Guest", "SuperAdmin", "Admin"],
+  "/workers": ["SuperAdmin", "Admin"],
+  "/admin/news": ["SuperAdmin", "Admin"],
+  "/tech/computers": ["SuperAdmin", "Admin"],
+  "/tech/laptops": ["SuperAdmin", "Admin"],
+  "/tech/printers": ["SuperAdmin", "Admin"],
+  "/tech/others": ["SuperAdmin", "Admin"],
+
+    
+  
+  // SuperAdmin 
+  "/admin/activity-log": ["SuperAdmin"],
+  "/admin/users": ["SuperAdmin"],
+
+
 };

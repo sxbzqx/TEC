@@ -49,7 +49,7 @@ export const ru = {
   secBidsDesc: "История поданных заявок",
   secDocsTitle: "Бланки документов",
   secDocsDesc: "Приказы, заявления и типовые бланки для скачивания",
-  secAdminUsersTitle: "Управление ролями",
+  secAdminUsersTitle: "Управление пользователями",
   secAdminUsersDesc: "Назначение прав доступа сотрудникам",
   secAdminNewsTitle: "Управление новостями",
   secAdminNewsDesc: "Публикация и редактирование новостей",
