@@ -53,12 +53,22 @@ public class AuthController : ControllerBase
         if (user == null)
             return NotFound();
 
+        string? fio = null;
+        if (!string.IsNullOrEmpty(user.Tabel))
+        {
+            fio = await _context.Workers
+                .Where(w => w.Tabel == user.Tabel)
+                .Select(w => w.Fio)
+                .FirstOrDefaultAsync();
+        }
+
         return Ok(
             new
             {
                 role = user.Role ?? "Worker",
                 loginName = user.Login,
                 department = user.Otdel != null ? user.Otdel.NameOtd : "Не указан",
+                fio,
             }
         );
     }

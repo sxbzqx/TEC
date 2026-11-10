@@ -4,8 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace tecBackend.Models;
 
-//
-
 #region
 
 public partial class SiteContext : DbContext

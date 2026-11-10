@@ -1,5 +1,100 @@
 @import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap');
 
+/* ── Tailwind v4 + shadcn/ui ──
+   Preflight намеренно НЕ подключаем (иначе ломается Ant Design) —
+   берём только тему и утилиты. Нужные части reset — ниже, в .tw-root. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* shadcn-токены сидят на уже существующих CSS-переменных проекта,
+   поэтому светлая/тёмная тема переключаются через [data-theme] как и раньше. */
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--ink);
+  --color-primary: var(--brand);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--surface-soft);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: var(--surface-soft);
+  --color-muted-foreground: var(--ink-soft);
+  --color-accent: var(--brand-soft);
+  --color-accent-foreground: var(--brand-dark);
+  --color-destructive: var(--danger);
+  --color-border: var(--border-strong);
+  --color-input: var(--border-strong);
+  --color-ring: var(--brand);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-success-dark: var(--success-dark);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-dark: var(--warning-dark);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-dark: var(--danger-dark);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-info-dark: var(--info-dark);
+  --color-header: var(--header-bg);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+}
+
+/* Мини-reset только внутри страниц, собранных на shadcn/ui */
+@layer base {
+  .tw-root,
+  .tw-root *,
+  .tw-root ::before,
+  .tw-root ::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: var(--border-strong);
+  }
+  .tw-root h1,
+  .tw-root h2,
+  .tw-root h3,
+  .tw-root h4,
+  .tw-root p {
+    margin: 0;
+    font-size: inherit;
+    font-weight: inherit;
+  }
+  .tw-root ul,
+  .tw-root ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tw-root a {
+    color: inherit;
+    text-decoration: inherit;
+  }
+  .tw-root button {
+    font: inherit;
+    color: inherit;
+    background: transparent;
+  }
+}
+
 :root {
   --brand: #534AB7;
   --brand-soft: #EEEDFE;

@@ -4,6 +4,7 @@ interface CurrentUser {
   role: string;
   loginName: string;
   department: string;
+  fio?: string;
 }
 
 export interface EmployeeLookupResult {
@@ -149,6 +150,7 @@ export const authService = {
         role: data.role || data.Role || "Worker",
         loginName: data.loginName || data.LoginName || "Сотрудник",
         department: data.department || data.Department || "Не указан",
+        fio: data.fio || data.Fio || undefined,
       };
     } catch {
       return null;

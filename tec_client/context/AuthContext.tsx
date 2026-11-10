@@ -7,6 +7,8 @@ import { authService } from "@/services/authService";
 interface AuthState {
   role: string;
   loginName: string;
+  /** ФИО сотрудника из кадровой записи (есть только у пользователей, привязанных к сотруднику). */
+  fio?: string;
 }
 
 interface AuthContextType {
