@@ -51,7 +51,7 @@ public class AdminController : ControllerBase
             p.Priority,
         };
 
-    /// <summary>Все новости, включая черновики — только для админов (класс под [Authorize]).</summary>
+    /// <summary>Все новости, включая черновики — только для админов.</summary>
     [HttpGet("posts")]
     public async Task<IActionResult> GetAllPosts()
     {
@@ -63,6 +63,7 @@ public class AdminController : ControllerBase
         return Ok(posts);
     }
 
+    /// <summary>Конкретная новость</summary>
     [AllowAnonymous]
     [HttpGet("posts/{id}")]
     public async Task<IActionResult> GetPostById(int id)
@@ -113,6 +114,9 @@ public class AdminController : ControllerBase
         return Ok(posts);
     }
 
+    /// <summary>
+    /// Создание новости
+    /// </summary>
     [HttpPost("posts")]
     public async Task<IActionResult> CreatePost([FromBody] PostRequest request)
     {
@@ -160,6 +164,9 @@ public class AdminController : ControllerBase
         return Ok(new { message = "Пост успешно создан", id = post.Id });
     }
 
+    /// <summary>
+    /// Изменение новости 
+    /// </summary>
     [HttpPut("posts/{id}")]
     public async Task<IActionResult> UpdatePost(int id, [FromBody] PostRequest request)
     {
@@ -205,6 +212,9 @@ public class AdminController : ControllerBase
         return Ok(new { message = "Параметры обновлены" });
     }
 
+    /// <summary>
+    /// Удаление новости 
+    /// </summary>
     [HttpDelete("posts/{id}")]
     public async Task<IActionResult> DeletePost(int id)
     {
