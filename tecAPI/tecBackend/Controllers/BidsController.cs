@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using tecBackend.Dtos;
+using tecBackend.Extensions;
 using tecBackend.Models;
 using tecBackend.Utils;
 
@@ -126,6 +127,9 @@ public class BidsController : ControllerBase
                 DateReshenie = d.DateReshenie,
                 CommentReshenie = d.CommentReshenie,
                 DateVyp = d.DateVyp,
+                ReceiverDepartment = user.Otdel.NameOtd,
+                IsMine = d.IdPerUser == user.Id,
+                IsReceiver = true,
             };
         });
 
@@ -133,7 +137,56 @@ public class BidsController : ControllerBase
     }
 
     /// <summary>
-    /// Детали одной заявки — доступна только сотруднику отдела ОКиТ.
+    /// Исходящие заявки — те, что подал текущий пользователь, со статусом рассмотрения.
+    /// Доступны любому сотруднику (в отличие от входящих, которые видит только исполняющий отдел).
+    /// </summary>
+    [HttpGet("outgoing")]
+    [Authorize(Roles = "Admin,SuperAdmin,Worker")]
+    public async Task<ActionResult<IEnumerable<DocumentIncomingDto>>> GetOutgoing()
+    {
+        if (User.GetUserId() is not int userId)
+            return Unauthorized();
+
+        var documents = await _context.Documents
+            .Where(d => d.IdPerUser == userId)
+            .OrderByDescending(d => d.DateFirst)
+            .ToListAsync();
+
+        var resourceNames = (await _context.Resources.ToListAsync())
+            .ToDictionary(r => (int)r.Id, r => r.Name);
+
+        var otdelNames = (await _context.Otdels.ToListAsync())
+            .ToDictionary(o => o.Id.ToString(), o => o.NameOtd);
+
+        var creatorInfo = (
+            await CreatorInfoResolver.ResolveManyAsync(_context, new[] { userId })
+        ).GetValueOrDefault(userId) ?? new CreatorInfoResolver.CreatorInfo("Неизвестно", null);
+
+        var result = documents.Select(d => new DocumentIncomingDto
+        {
+            Id = d.Id,
+            DateFirst = d.DateFirst,
+            IdResource = d.IdResource,
+            ResourceName = resourceNames.GetValueOrDefault(d.IdResource, ""),
+            CreatorName = creatorInfo.Name,
+            CreatorDepartment = creatorInfo.Department,
+            Amount = d.Amount,
+            Comment = d.Comment,
+            Action = d.Action,
+            Made = d.Made,
+            DateReshenie = d.DateReshenie,
+            CommentReshenie = d.CommentReshenie,
+            DateVyp = d.DateVyp,
+            ReceiverDepartment = otdelNames.GetValueOrDefault(d.IdReceiver),
+            IsMine = true,
+            IsReceiver = false,
+        });
+
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Детали одной заявки — доступны сотруднику отдела-исполнителя и автору заявки.
     /// </summary>
     [HttpGet("{id:int}")]
     [Authorize(Roles = "SuperAdmin,Admin,Worker")]
@@ -151,7 +204,10 @@ public class BidsController : ControllerBase
         if (document == null)
             return NotFound();
 
-        if (user?.Otdel == null || document.IdReceiver != user.Otdel.Id.ToString())
+        var isReceiver = user?.Otdel != null && document.IdReceiver == user.Otdel.Id.ToString();
+        var isMine = user != null && document.IdPerUser == user.Id;
+
+        if (!isReceiver && !isMine)
             return Forbid();
 
         var resource = await _context.Resources.FirstOrDefaultAsync(r => r.Id == document.IdResource);
@@ -160,6 +216,10 @@ public class BidsController : ControllerBase
             .Include(u => u.Otdel)
             .FirstOrDefaultAsync(u => u.Id == document.IdPerUser);
         var creatorInfo = await CreatorInfoResolver.ResolveAsync(_context, creatorUser);
+
+        var receiverDepartment = (await _context.Otdels.ToListAsync())
+            .FirstOrDefault(o => o.Id.ToString() == document.IdReceiver)
+            ?.NameOtd;
 
         return Ok(new DocumentIncomingDto
         {
@@ -176,6 +236,9 @@ public class BidsController : ControllerBase
             DateReshenie = document.DateReshenie,
             CommentReshenie = document.CommentReshenie,
             DateVyp = document.DateVyp,
+            ReceiverDepartment = receiverDepartment,
+            IsMine = isMine,
+            IsReceiver = isReceiver,
         });
     }
     

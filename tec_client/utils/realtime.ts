@@ -1,6 +1,7 @@
 import type { QueryClient, QueryKey } from "@tanstack/react-query";
 import { newsKeys } from "@/services/newsService";
 import { adminUserKeys } from "@/services/adminUserService";
+import { suggestionKeys } from "@/services/suggestionService";
 import { ROUTE_PERMISSIONS } from "@/middleware/config";
 
 /**
@@ -30,6 +31,7 @@ const TOPIC_QUERY_KEYS: Record<string, readonly QueryKey[]> = {
   ],
   workers: [["workers"]],
   users: [adminUserKeys.list, adminUserKeys.oneAll],
+  suggestions: [suggestionKeys.all],
 };
 
 export function invalidateTopic(queryClient: QueryClient, topic: string) {

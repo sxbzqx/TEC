@@ -8,6 +8,13 @@ export const useIncomingBids = () => {
   });
 };
 
+export const useOutgoingBids = () => {
+  return useQuery({
+    queryKey: ["bid", "outgoing"],
+    queryFn: bidService.getOutgoing,
+  });
+};
+
 export const useBidDetail = (id: number | string | undefined) => {
   return useQuery({
     queryKey: ["bid", "detail", id],

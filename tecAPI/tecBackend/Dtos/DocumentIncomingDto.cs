@@ -35,4 +35,13 @@ public class DocumentIncomingDto
     public string? CommentReshenie { get; set; }
 
     public DateTime? DateVyp { get; set; }
+
+    /// <summary>Отдел, которому адресована заявка (исполнитель).</summary>
+    public string? ReceiverDepartment { get; set; }
+
+    /// <summary>true — текущий пользователь сам подал эту заявку.</summary>
+    public bool IsMine { get; set; }
+
+    /// <summary>true — заявка адресована отделу текущего пользователя (он может её рассматривать).</summary>
+    public bool IsReceiver { get; set; }
 }

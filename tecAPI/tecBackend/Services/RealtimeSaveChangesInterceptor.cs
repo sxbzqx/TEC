@@ -32,6 +32,7 @@ public sealed class RealtimeSaveChangesInterceptor(
         [typeof(OfficeEquipment)] = RealtimeTopics.Equipment,
         [typeof(Worker)] = RealtimeTopics.Workers,
         [typeof(User)] = RealtimeTopics.Users,
+        [typeof(Suggestion)] = RealtimeTopics.Suggestions,
     };
 
     private void Capture(DbContext? context)

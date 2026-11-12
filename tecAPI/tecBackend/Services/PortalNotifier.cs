@@ -16,6 +16,7 @@ public static class RealtimeTopics
     public const string Equipment = "equipment";
     public const string Workers = "workers";
     public const string Users = "users";
+    public const string Suggestions = "suggestions";
 
     // Публичные данные — слушают все, включая гостей.
     private static readonly HashSet<string> Public = [Posts, Categories, Departments];

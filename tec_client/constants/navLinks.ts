@@ -38,6 +38,12 @@ export const NAV_LINKS = [
         roles: ["SuperAdmin", "Admin"],
       },
       {
+        key: "/admin/suggestions",
+        label: "Предложения сотрудников",
+        labelKg: "Кызматкерлердин сунуштары",
+        roles: ["SuperAdmin", "Admin"],
+      },
+      {
         key: "/admin/activity-log",
         label: "Журнал действий",
         labelKg: "Аракеттер журналы",
@@ -120,10 +126,36 @@ export const NAV_LINKS = [
         roles: ["Admin", "SuperAdmin", "Worker"],
       },
       {
+        key: "/bids/outgoing",
+        label: "Исходящие заявки",
+        labelKg: "Чыгуучу өтүнмөлөр",
+        roles: ["Admin", "SuperAdmin", "Worker"],
+      },
+      {
         key: "/bids/incoming", 
         label: "Входящие Заявки",
         labelKg: "Келген өтүнмөлөр",
         roles: ["Admin", "SuperAdmin"]
+      },
+    ],
+  },
+  {
+    key: "suggestions-sub",
+    label: "Предложения",
+    labelKg: "Сунуштар",
+    roles: ["Admin", "SuperAdmin", "Worker"],
+    children: [
+      {
+        key: "/suggestions",
+        label: "Отправить предложение",
+        labelKg: "Сунуш жөнөтүү",
+        roles: ["Admin", "SuperAdmin", "Worker"],
+      },
+      {
+        key: "/suggestions/my",
+        label: "Мои предложения",
+        labelKg: "Менин сунуштарым",
+        roles: ["Admin", "SuperAdmin", "Worker"],
       },
     ],
   },

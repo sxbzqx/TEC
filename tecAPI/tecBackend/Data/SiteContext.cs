@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace tecBackend.Models;
 
+//
+
 #region
 
 public partial class SiteContext : DbContext
@@ -27,6 +29,8 @@ public partial class SiteContext : DbContext
     public virtual DbSet<Category> Categories { get; set; }
 
     public virtual DbSet<Resource> Resources { get; set; }
+
+    public virtual DbSet<Suggestion> Suggestions { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -434,6 +438,24 @@ public partial class SiteContext : DbContext
                 .HasColumnType("integer")
                 .HasColumnName("actor_user_id");
             entity.Property(e => e.CreatedAt).HasColumnType("timestamp").HasColumnName("created_at");
+        });
+
+        modelBuilder.Entity<Suggestion>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("suggestions_pkey");
+
+            entity.ToTable("suggestions");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.UserId).HasColumnName("userid");
+            entity.Property(e => e.Text).HasMaxLength(1000).HasColumnName("text");
+            entity.Property(e => e.Comment).HasMaxLength(500).HasColumnName("comment");
+            entity.Property(e => e.CreatedAt).HasColumnType("timestamp").HasColumnName("createdat");
+            entity.Property(e => e.AdminComment).HasMaxLength(500).HasColumnName("admincomment");
+            entity.Property(e => e.AdminCommentAt).HasColumnType("timestamp").HasColumnName("admincommentat");
+            entity.Property(e => e.AdminCommentByUserId).HasColumnName("admincommentbyuserid");
+
+            entity.HasIndex(e => e.UserId);
         });
 
         modelBuilder.Entity<User>().HasIndex(u => u.Login).IsUnique();

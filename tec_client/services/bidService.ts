@@ -18,6 +18,11 @@ export const bidService = {
     return data;
   },
 
+  async getOutgoing() {
+    const { data } = await $api.get<BidIncoming[]>("/bids/outgoing");
+    return data;
+  },
+
   async getById(id: number | string) {
     const { data } = await $api.get<BidIncoming>(`/bids/${id}`);
     return data;

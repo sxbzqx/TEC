@@ -314,6 +314,55 @@ namespace tecBackend.Migrations
                     b.ToTable("resources", (string)null);
                 });
 
+            modelBuilder.Entity("tecBackend.Models.Suggestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdminComment")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("admincomment");
+
+                    b.Property<DateTime?>("AdminCommentAt")
+                        .HasColumnType("timestamp")
+                        .HasColumnName("admincommentat");
+
+                    b.Property<int?>("AdminCommentByUserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("admincommentbyuserid");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("comment");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp")
+                        .HasColumnName("createdat");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("userid");
+
+                    b.HasKey("Id")
+                        .HasName("suggestions_pkey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("suggestions", (string)null);
+                });
+
             modelBuilder.Entity("tecBackend.Models.User", b =>
                 {
                     b.Property<int>("Id")

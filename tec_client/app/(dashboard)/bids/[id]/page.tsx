@@ -74,9 +74,15 @@ export default function BidDetailPage() {
     }
   };
 
+  // Исполнитель возвращается во входящие, автор заявки — в свои исходящие.
+  const isReceiver = bid?.isReceiver ?? false;
   const backButton = (
-    <Button icon={<ArrowLeftOutlined />} onClick={() => router.push("/bids/incoming")} style={{ marginBottom: 16 }}>
-      {t("bidDetailBack")}
+    <Button
+      icon={<ArrowLeftOutlined />}
+      onClick={() => router.push(isReceiver ? "/bids/incoming" : "/bids/outgoing")}
+      style={{ marginBottom: 16 }}
+    >
+      {isReceiver ? t("bidDetailBack") : t("bidDetailBackOutgoing")}
     </Button>
   );
 
@@ -100,8 +106,9 @@ export default function BidDetailPage() {
   const meta = statusMeta(bid);
   // Заявка ждёт решения впервые (0) или ранее была отложена (3) — из отложенного
   // можно снова выбрать любой статус.
-  const isDecidable = bid.action === 0 || bid.action === 3;
-  const isCompletable = bid.action === 1 && bid.made === 0;
+  // Решать и выполнять заявку может только отдел-исполнитель; автору она доступна для просмотра.
+  const isDecidable = bid.isReceiver && (bid.action === 0 || bid.action === 3);
+  const isCompletable = bid.isReceiver && bid.action === 1 && bid.made === 0;
 
   return (
     <div style={{ padding: 24, maxWidth: 720, margin: "0 auto" }}>
@@ -113,6 +120,9 @@ export default function BidDetailPage() {
 
       <Descriptions bordered column={1} size="middle" style={{ marginTop: 16 }}>
         <Descriptions.Item label={t("colMaterial")}>{bid.resourceName}</Descriptions.Item>
+        {bid.receiverDepartment && (
+          <Descriptions.Item label={t("bidDetailReceiver")}>{bid.receiverDepartment}</Descriptions.Item>
+        )}
         <Descriptions.Item label={t("bidDetailCreator")}>
           {bid.creatorName}
           {bid.creatorDepartment ? ` (${bid.creatorDepartment})` : ""}

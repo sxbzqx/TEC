@@ -34,4 +34,10 @@ export interface BidIncoming {
   dateReshenie: string | null;
   commentReshenie: string | null;
   dateVyp: string | null;
+  /** Отдел-исполнитель, которому адресована заявка. */
+  receiverDepartment: string | null;
+  /** Текущий пользователь сам подал эту заявку. */
+  isMine: boolean;
+  /** Заявка адресована отделу текущего пользователя — он может её рассматривать. */
+  isReceiver: boolean;
 }
