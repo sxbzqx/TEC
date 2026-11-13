@@ -1,9 +1,9 @@
 export const ROUTE_PERMISSIONS: Record<string, string[]> = {
 
-  // Все (User -> не зареганный пользователь)
-  "/news": ["User", "Worker", "Admin", "SuperAdmin"],
-  "/navigation": ["User", "Worker", "Admin", "SuperAdmin"],
-  "/map": ["User", "Worker", "Admin", "SuperAdmin"],
+  // Все (Guest -> не зареганный пользователь)
+  "/news": ["Guest", "Worker", "Admin", "SuperAdmin"],
+  "/navigation": ["Guest", "Worker", "Admin", "SuperAdmin"],
+  "/map": ["Guest", "Worker", "Admin", "SuperAdmin"],
 
 
 
@@ -30,6 +30,4 @@ export const ROUTE_PERMISSIONS: Record<string, string[]> = {
   // SuperAdmin 
   "/admin/activity-log": ["SuperAdmin"],
   "/admin/users": ["SuperAdmin"],
-
-
 };

@@ -5,19 +5,19 @@ export const NAV_LINKS = [
     key: "/",
     label: "Главная",
     labelKg: "Башкы бет",
-    roles: ["Guest", "Worker", "Admin", "SuperAdmin", "User"],
+    roles: ["User", "Worker", "Admin", "SuperAdmin"],
   },
   {
     key: "/news",
     label: "Новости",
     labelKg: "Жаңылыктар",
-    roles: ["Guest", "Worker", "Admin", "SuperAdmin", "User"],
+    roles: ["Worker", "Admin", "SuperAdmin"],
   },
   {
     key: "/navigation",
     label: "Навигация",
     labelKg: "Багыттоо",
-    roles: ["Guest", "Worker", "Admin", "SuperAdmin"],
+    roles: ["Worker", "Admin", "SuperAdmin"],
   },
   {
     key: "admin-sub",
